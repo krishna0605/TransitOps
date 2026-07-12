@@ -89,7 +89,7 @@ export default function HomePage() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg">
                 <Link href="/dashboard">
-                  Open the dashboard
+                  Demo App
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>
