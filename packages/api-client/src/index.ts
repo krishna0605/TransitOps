@@ -1,2 +1,7 @@
-// Generated OpenAPI types will be exported from this package in a later slice.
-export {};
+export { createTransitOpsClient } from "./client";
+export {
+  ApiContractError,
+  type ApiErrorPayload,
+  unwrapApiResponse,
+} from "./errors";
+export type { components, operations, paths } from "./generated/schema";
