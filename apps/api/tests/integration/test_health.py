@@ -24,7 +24,12 @@ def test_versioned_health(client: TestClient) -> None:
 def test_readiness_skips_database_by_default(client: TestClient) -> None:
     response = client.get("/api/v1/health/ready")
     assert response.status_code == 200
-    assert response.json() == {"status": "ready", "database": "skipped"}
+    assert response.json() == {
+        "status": "ready",
+        "database": "skipped",
+        "redis": "skipped",
+        "storage": "skipped",
+    }
 
 
 def test_readiness_reports_database_failure(
@@ -41,9 +46,10 @@ def test_readiness_reports_database_failure(
     response = client.get("/api/v1/health/ready", headers={"X-Request-ID": "db-check"})
 
     assert response.status_code == 503
-    assert response.json() == {
-        "code": "DATABASE_UNAVAILABLE",
-        "message": "PostgreSQL is not ready.",
-        "details": {},
-        "request_id": "db-check",
-    }
+    payload = response.json()
+    assert payload["code"] == "DATABASE_UNAVAILABLE"
+    assert payload["message"] == "One or more backend dependencies are not ready."
+    assert payload["details"]["database"] is False
+    assert isinstance(payload["details"]["redis"], bool)
+    assert isinstance(payload["details"]["storage"], bool)
+    assert payload["request_id"] == "db-check"

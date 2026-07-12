@@ -1,36 +1,31 @@
-from __future__ import annotations
+from datetime import date, datetime
+from decimal import Decimal
+from uuid import UUID
 
-from datetime import date
-from typing import TYPE_CHECKING
-
-from sqlalchemy import CheckConstraint, Date, Float, String, text
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Date, DateTime, ForeignKey, Index, Numeric, String, UniqueConstraint, Uuid
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
-from app.db.constants import DRIVER_STATUSES, LICENSE_CATEGORIES, in_check
-
-if TYPE_CHECKING:
-    from app.db.models.trip import Trip
+from app.db.mixins import TimestampMixin, UUIDPrimaryKeyMixin, VersionMixin
 
 
-class Driver(Base):
-    __tablename__ = "driver"
+class Driver(UUIDPrimaryKeyMixin, TimestampMixin, VersionMixin, Base):
+    __tablename__ = "drivers"
     __table_args__ = (
-        CheckConstraint(
-            in_check("license_category", LICENSE_CATEGORIES), name="license_category_valid"
-        ),
-        CheckConstraint(in_check("status", DRIVER_STATUSES), name="status_valid"),
+        UniqueConstraint("organization_id", "license_no", name="uq_driver_org_license"),
+        Index("ix_driver_org_status", "organization_id", "status"),
     )
 
-    driver_id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String, nullable=False)
-    license_no: Mapped[str] = mapped_column(String, nullable=False, unique=True)
-    license_category: Mapped[str] = mapped_column(String, nullable=False)
+    organization_id: Mapped[UUID] = mapped_column(Uuid, ForeignKey("organizations.id"))
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+    license_no: Mapped[str] = mapped_column(String(64), nullable=False)
+    license_category: Mapped[str] = mapped_column(String(20), nullable=False)
     license_expiry: Mapped[date] = mapped_column(Date, nullable=False)
-    contact: Mapped[str] = mapped_column(String, nullable=False)
-    safety_score: Mapped[float] = mapped_column(Float, nullable=False, server_default=text("100"))
-    status: Mapped[str] = mapped_column(
-        String, nullable=False, index=True, server_default=text("'Available'")
-    )
+    contact: Mapped[str] = mapped_column(String(80), nullable=False)
+    safety_score: Mapped[Decimal] = mapped_column(Numeric(5, 2), nullable=False, default=100)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="AVAILABLE")
+    archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    trips: Mapped[list[Trip]] = relationship(back_populates="driver")
+    @property
+    def driver_id(self) -> UUID:
+        return self.id

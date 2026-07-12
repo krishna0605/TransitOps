@@ -59,7 +59,7 @@ export function MaintenanceView() {
     }
     try {
       await createMaintenance.mutateAsync({
-        vehicle_id: Number(form.vehicle),
+        vehicle_id: form.vehicle,
         service_type: form.service,
         cost: Number(form.cost),
         service_date: form.date || null,
@@ -75,9 +75,9 @@ export function MaintenanceView() {
     }
   }
 
-  async function close(maintenanceId: number) {
+  async function close(maintenanceId: string, version: number) {
     try {
-      await closeMaintenance.mutateAsync(maintenanceId);
+      await closeMaintenance.mutateAsync({ maintenanceId, version });
       toast.success("Maintenance closed", {
         description: "Vehicle returned to Available",
       });
@@ -212,7 +212,7 @@ export function MaintenanceView() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => close(log.maintenance_id)}
+                          onClick={() => close(log.maintenance_id, log.version)}
                         >
                           Close
                         </Button>

@@ -1,11 +1,220 @@
 {
   "components": {
     "schemas": {
+      "AnalyticsOverview": {
+        "properties": {
+          "average_cost_per_trip": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Average Cost Per Trip",
+            "type": "string"
+          },
+          "completed_trips": {
+            "title": "Completed Trips",
+            "type": "integer"
+          },
+          "fleet_utilization_percent": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Fleet Utilization Percent",
+            "type": "string"
+          },
+          "fuel_cost": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Fuel Cost",
+            "type": "string"
+          },
+          "fuel_efficiency_km_per_liter": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Fuel Efficiency Km Per Liter",
+            "type": "string"
+          },
+          "fuel_liters": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Fuel Liters",
+            "type": "string"
+          },
+          "maintenance_cost": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Maintenance Cost",
+            "type": "string"
+          },
+          "operational_cost": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Operational Cost",
+            "type": "string"
+          },
+          "other_approved_cost": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Other Approved Cost",
+            "type": "string"
+          },
+          "total_distance_km": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Distance Km",
+            "type": "string"
+          }
+        },
+        "required": [
+          "completed_trips",
+          "total_distance_km",
+          "fuel_liters",
+          "fuel_cost",
+          "maintenance_cost",
+          "other_approved_cost",
+          "operational_cost",
+          "average_cost_per_trip",
+          "fleet_utilization_percent",
+          "fuel_efficiency_km_per_liter"
+        ],
+        "title": "AnalyticsOverview",
+        "type": "object"
+      },
+      "ContactCreate": {
+        "properties": {
+          "email": {
+            "format": "email",
+            "title": "Email",
+            "type": "string"
+          },
+          "message": {
+            "maxLength": 5000,
+            "minLength": 10,
+            "title": "Message",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Name",
+            "type": "string"
+          },
+          "topic": {
+            "maxLength": 80,
+            "minLength": 2,
+            "title": "Topic",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "topic",
+          "message"
+        ],
+        "title": "ContactCreate",
+        "type": "object"
+      },
+      "DashboardSummary": {
+        "properties": {
+          "active_trips": {
+            "title": "Active Trips",
+            "type": "integer"
+          },
+          "available_vehicles": {
+            "title": "Available Vehicles",
+            "type": "integer"
+          },
+          "completed_trips": {
+            "title": "Completed Trips",
+            "type": "integer"
+          },
+          "in_maintenance": {
+            "title": "In Maintenance",
+            "type": "integer"
+          },
+          "pending_expenses": {
+            "title": "Pending Expenses",
+            "type": "integer"
+          },
+          "total_vehicles": {
+            "title": "Total Vehicles",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total_vehicles",
+          "available_vehicles",
+          "in_maintenance",
+          "active_trips",
+          "completed_trips",
+          "pending_expenses"
+        ],
+        "title": "DashboardSummary",
+        "type": "object"
+      },
+      "DocumentCreate": {
+        "properties": {
+          "content_type": {
+            "title": "Content Type",
+            "type": "string"
+          },
+          "document_type": {
+            "maxLength": 40,
+            "minLength": 2,
+            "title": "Document Type",
+            "type": "string"
+          },
+          "entity_id": {
+            "format": "uuid",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "entity_type": {
+            "pattern": "^(vehicle|driver|trip|maintenance|expense)$",
+            "title": "Entity Type",
+            "type": "string"
+          },
+          "filename": {
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Filename",
+            "type": "string"
+          },
+          "size_bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "entity_type",
+          "entity_id",
+          "document_type",
+          "filename",
+          "content_type",
+          "size_bytes"
+        ],
+        "title": "DocumentCreate",
+        "type": "object"
+      },
+      "DocumentUploadResponse": {
+        "properties": {
+          "document_id": {
+            "format": "uuid",
+            "title": "Document Id",
+            "type": "string"
+          },
+          "expires_in": {
+            "default": 900,
+            "title": "Expires In",
+            "type": "integer"
+          },
+          "upload_url": {
+            "title": "Upload Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_id",
+          "upload_url"
+        ],
+        "title": "DocumentUploadResponse",
+        "type": "object"
+      },
       "DriverCreate": {
         "properties": {
           "contact": {
-            "maxLength": 32,
-            "minLength": 1,
+            "maxLength": 80,
+            "minLength": 3,
             "title": "Contact",
             "type": "string"
           },
@@ -23,23 +232,31 @@
             "type": "string"
           },
           "license_no": {
-            "maxLength": 32,
-            "minLength": 1,
+            "maxLength": 64,
+            "minLength": 2,
             "title": "License No",
             "type": "string"
           },
           "name": {
             "maxLength": 120,
-            "minLength": 1,
+            "minLength": 2,
             "title": "Name",
             "type": "string"
           },
           "safety_score": {
-            "default": 100,
-            "maximum": 100.0,
-            "minimum": 0.0,
-            "title": "Safety Score",
-            "type": "number"
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "default": "100",
+            "title": "Safety Score"
           }
         },
         "required": [
@@ -59,8 +276,9 @@
             "type": "string"
           },
           "driver_id": {
+            "format": "uuid",
             "title": "Driver Id",
-            "type": "integer"
+            "type": "string"
           },
           "license_category": {
             "title": "License Category",
@@ -80,12 +298,17 @@
             "type": "string"
           },
           "safety_score": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
             "title": "Safety Score",
-            "type": "number"
+            "type": "string"
           },
           "status": {
             "title": "Status",
             "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
           }
         },
         "required": [
@@ -96,7 +319,8 @@
           "license_expiry",
           "contact",
           "safety_score",
-          "status"
+          "status",
+          "version"
         ],
         "title": "DriverRead",
         "type": "object"
@@ -105,19 +329,73 @@
         "properties": {
           "status": {
             "enum": [
-              "Available",
-              "On Trip",
-              "Off Duty",
-              "Suspended"
+              "AVAILABLE",
+              "OFF_DUTY",
+              "SUSPENDED"
             ],
             "title": "Status",
             "type": "string"
+          },
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
           }
         },
         "required": [
-          "status"
+          "status",
+          "version"
         ],
         "title": "DriverStatusUpdate",
+        "type": "object"
+      },
+      "DriverUpdate": {
+        "properties": {
+          "contact": {
+            "maxLength": 80,
+            "minLength": 3,
+            "title": "Contact",
+            "type": "string"
+          },
+          "license_expiry": {
+            "format": "date",
+            "title": "License Expiry",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Name",
+            "type": "string"
+          },
+          "safety_score": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Safety Score"
+          },
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "license_expiry",
+          "contact",
+          "safety_score",
+          "version"
+        ],
+        "title": "DriverUpdate",
         "type": "object"
       },
       "ErrorResponse": {
@@ -152,23 +430,46 @@
       "ExpenseCreate": {
         "properties": {
           "amount": {
-            "exclusiveMinimum": 0.0,
-            "title": "Amount",
-            "type": "number"
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Amount"
           },
           "category": {
-            "default": "Toll",
             "enum": [
-              "Toll",
-              "Other"
+              "TOLL",
+              "PARKING",
+              "INSURANCE",
+              "PERMIT",
+              "OTHER"
             ],
             "title": "Category",
             "type": "string"
           },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
           "trip_id": {
             "anyOf": [
               {
-                "type": "integer"
+                "format": "uuid",
+                "type": "string"
               },
               {
                 "type": "null"
@@ -177,35 +478,99 @@
             "title": "Trip Id"
           },
           "vehicle_id": {
-            "title": "Vehicle Id",
-            "type": "integer"
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle Id"
           }
         },
         "required": [
-          "vehicle_id",
+          "category",
           "amount"
         ],
         "title": "ExpenseCreate",
         "type": "object"
       },
+      "ExpenseDecision": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "title": "ExpenseDecision",
+        "type": "object"
+      },
       "ExpenseRead": {
         "properties": {
           "amount": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
             "title": "Amount",
-            "type": "number"
+            "type": "string"
           },
           "category": {
             "title": "Category",
             "type": "string"
           },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
           "expense_id": {
+            "format": "uuid",
             "title": "Expense Id",
-            "type": "integer"
+            "type": "string"
+          },
+          "fuel_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fuel Id"
           },
           "maintenance_id": {
             "anyOf": [
               {
-                "type": "integer"
+                "format": "uuid",
+                "type": "string"
               },
               {
                 "type": "null"
@@ -220,7 +585,8 @@
           "trip_id": {
             "anyOf": [
               {
-                "type": "integer"
+                "format": "uuid",
+                "type": "string"
               },
               {
                 "type": "null"
@@ -240,34 +606,82 @@
             "title": "Trip Label"
           },
           "vehicle_id": {
-            "title": "Vehicle Id",
-            "type": "integer"
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle Id"
           },
           "vehicle_reg_no": {
-            "title": "Vehicle Reg No",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle Reg No"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
           }
         },
         "required": [
           "expense_id",
           "vehicle_id",
-          "vehicle_reg_no",
           "trip_id",
-          "trip_label",
           "maintenance_id",
+          "fuel_id",
           "category",
           "amount",
-          "status"
+          "currency",
+          "status",
+          "description",
+          "version"
         ],
         "title": "ExpenseRead",
+        "type": "object"
+      },
+      "ExportCreate": {
+        "properties": {
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "report_type": {
+            "pattern": "^(expenses|analytics)$",
+            "title": "Report Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "report_type"
+        ],
+        "title": "ExportCreate",
         "type": "object"
       },
       "FuelCreate": {
         "properties": {
           "cost": {
-            "minimum": 0.0,
-            "title": "Cost",
-            "type": "number"
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Cost"
           },
           "fuel_date": {
             "anyOf": [
@@ -282,14 +696,39 @@
             "title": "Fuel Date"
           },
           "liters": {
-            "exclusiveMinimum": 0.0,
-            "title": "Liters",
-            "type": "number"
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Liters"
+          },
+          "odometer": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Odometer"
           },
           "trip_id": {
             "anyOf": [
               {
-                "type": "integer"
+                "format": "uuid",
+                "type": "string"
               },
               {
                 "type": "null"
@@ -298,8 +737,9 @@
             "title": "Trip Id"
           },
           "vehicle_id": {
+            "format": "uuid",
             "title": "Vehicle Id",
-            "type": "integer"
+            "type": "string"
           }
         },
         "required": [
@@ -313,8 +753,9 @@
       "FuelRead": {
         "properties": {
           "cost": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
             "title": "Cost",
-            "type": "number"
+            "type": "string"
           },
           "fuel_date": {
             "format": "date",
@@ -322,17 +763,32 @@
             "type": "string"
           },
           "fuel_id": {
+            "format": "uuid",
             "title": "Fuel Id",
-            "type": "integer"
+            "type": "string"
           },
           "liters": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
             "title": "Liters",
-            "type": "number"
+            "type": "string"
+          },
+          "odometer": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Odometer"
           },
           "trip_id": {
             "anyOf": [
               {
-                "type": "integer"
+                "format": "uuid",
+                "type": "string"
               },
               {
                 "type": "null"
@@ -340,24 +796,18 @@
             ],
             "title": "Trip Id"
           },
-          "trip_label": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Trip Label"
-          },
           "vehicle_id": {
+            "format": "uuid",
             "title": "Vehicle Id",
-            "type": "integer"
+            "type": "string"
           },
           "vehicle_reg_no": {
             "title": "Vehicle Reg No",
             "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
           }
         },
         "required": [
@@ -365,10 +815,11 @@
           "vehicle_id",
           "vehicle_reg_no",
           "trip_id",
-          "trip_label",
           "fuel_date",
           "liters",
-          "cost"
+          "cost",
+          "odometer",
+          "version"
         ],
         "title": "FuelRead",
         "type": "object"
@@ -415,12 +866,52 @@
         "title": "HealthResponse",
         "type": "object"
       },
+      "LoginRequest": {
+        "properties": {
+          "email": {
+            "format": "email",
+            "title": "Email",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginRequest",
+        "type": "object"
+      },
       "MaintenanceCreate": {
         "properties": {
           "cost": {
-            "minimum": 0.0,
-            "title": "Cost",
-            "type": "number"
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Cost"
+          },
+          "priority": {
+            "default": "NORMAL",
+            "enum": [
+              "LOW",
+              "NORMAL",
+              "HIGH",
+              "CRITICAL"
+            ],
+            "title": "Priority",
+            "type": "string"
           },
           "service_date": {
             "anyOf": [
@@ -435,24 +926,16 @@
             "title": "Service Date"
           },
           "service_type": {
-            "maxLength": 120,
-            "minLength": 1,
+            "maxLength": 100,
+            "minLength": 2,
             "title": "Service Type",
-            "type": "string"
-          },
-          "status": {
-            "default": "Active",
-            "enum": [
-              "Active",
-              "Completed"
-            ],
-            "title": "Status",
             "type": "string"
           },
           "trip_id": {
             "anyOf": [
               {
-                "type": "integer"
+                "format": "uuid",
+                "type": "string"
               },
               {
                 "type": "null"
@@ -461,8 +944,9 @@
             "title": "Trip Id"
           },
           "vehicle_id": {
+            "format": "uuid",
             "title": "Vehicle Id",
-            "type": "integer"
+            "type": "string"
           }
         },
         "required": [
@@ -476,23 +960,18 @@
       "MaintenanceRead": {
         "properties": {
           "cost": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
             "title": "Cost",
-            "type": "number"
-          },
-          "linked_expense_id": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Linked Expense Id"
+            "type": "string"
           },
           "maintenance_id": {
+            "format": "uuid",
             "title": "Maintenance Id",
-            "type": "integer"
+            "type": "string"
+          },
+          "priority": {
+            "title": "Priority",
+            "type": "string"
           },
           "service_date": {
             "format": "date",
@@ -510,7 +989,8 @@
           "trip_id": {
             "anyOf": [
               {
-                "type": "integer"
+                "format": "uuid",
+                "type": "string"
               },
               {
                 "type": "null"
@@ -519,12 +999,17 @@
             "title": "Trip Id"
           },
           "vehicle_id": {
+            "format": "uuid",
             "title": "Vehicle Id",
-            "type": "integer"
+            "type": "string"
           },
           "vehicle_reg_no": {
             "title": "Vehicle Reg No",
             "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
           }
         },
         "required": [
@@ -533,12 +1018,48 @@
           "vehicle_reg_no",
           "trip_id",
           "service_type",
+          "priority",
           "cost",
           "service_date",
           "status",
-          "linked_expense_id"
+          "version"
         ],
         "title": "MaintenanceRead",
+        "type": "object"
+      },
+      "MaintenanceTransition": {
+        "properties": {
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "title": "MaintenanceTransition",
+        "type": "object"
+      },
+      "OrganizationUpdate": {
+        "properties": {
+          "name": {
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Name",
+            "type": "string"
+          },
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "version"
+        ],
+        "title": "OrganizationUpdate",
         "type": "object"
       },
       "ReadinessResponse": {
@@ -551,17 +1072,150 @@
             "title": "Database",
             "type": "string"
           },
+          "redis": {
+            "enum": [
+              "ready",
+              "skipped"
+            ],
+            "title": "Redis",
+            "type": "string"
+          },
           "status": {
             "const": "ready",
             "default": "ready",
             "title": "Status",
             "type": "string"
+          },
+          "storage": {
+            "enum": [
+              "ready",
+              "skipped"
+            ],
+            "title": "Storage",
+            "type": "string"
           }
         },
         "required": [
-          "database"
+          "database",
+          "redis",
+          "storage"
         ],
         "title": "ReadinessResponse",
+        "type": "object"
+      },
+      "SessionResponse": {
+        "properties": {
+          "access_token": {
+            "title": "Access Token",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "membership_id": {
+            "format": "uuid",
+            "title": "Membership Id",
+            "type": "string"
+          },
+          "organization_id": {
+            "format": "uuid",
+            "title": "Organization Id",
+            "type": "string"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "token_type": {
+            "default": "bearer",
+            "title": "Token Type",
+            "type": "string"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "access_token",
+          "expires_at",
+          "user_id",
+          "organization_id",
+          "membership_id",
+          "role"
+        ],
+        "title": "SessionResponse",
+        "type": "object"
+      },
+      "SettingsUpdate": {
+        "properties": {
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "distance_unit": {
+            "pattern": "^(km|mi)$",
+            "title": "Distance Unit",
+            "type": "string"
+          },
+          "timezone": {
+            "maxLength": 64,
+            "minLength": 3,
+            "title": "Timezone",
+            "type": "string"
+          },
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "currency",
+          "distance_unit",
+          "timezone",
+          "version"
+        ],
+        "title": "SettingsUpdate",
+        "type": "object"
+      },
+      "SwitchOrganizationRequest": {
+        "properties": {
+          "organization_id": {
+            "format": "uuid",
+            "title": "Organization Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "organization_id"
+        ],
+        "title": "SwitchOrganizationRequest",
+        "type": "object"
+      },
+      "TripCancel": {
+        "properties": {
+          "reason": {
+            "maxLength": 500,
+            "minLength": 2,
+            "title": "Reason",
+            "type": "string"
+          },
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "reason",
+          "version"
+        ],
+        "title": "TripCancel",
         "type": "object"
       },
       "TripComplete": {
@@ -570,49 +1224,79 @@
             "anyOf": [
               {
                 "minimum": 0.0,
-                "type": "integer"
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
               },
               {
                 "type": "null"
               }
             ],
             "title": "Final Odometer"
+          },
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
           }
         },
+        "required": [
+          "version"
+        ],
         "title": "TripComplete",
         "type": "object"
       },
       "TripCreate": {
         "properties": {
           "cargo_weight_kg": {
-            "exclusiveMinimum": 0.0,
-            "title": "Cargo Weight Kg",
-            "type": "number"
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Cargo Weight Kg"
           },
           "destination": {
-            "maxLength": 120,
-            "minLength": 1,
+            "maxLength": 160,
+            "minLength": 2,
             "title": "Destination",
             "type": "string"
           },
           "driver_id": {
+            "format": "uuid",
             "title": "Driver Id",
-            "type": "integer"
+            "type": "string"
           },
           "planned_distance_km": {
-            "exclusiveMinimum": 0.0,
-            "title": "Planned Distance Km",
-            "type": "number"
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Planned Distance Km"
           },
           "source": {
-            "maxLength": 120,
-            "minLength": 1,
+            "maxLength": 160,
+            "minLength": 2,
             "title": "Source",
             "type": "string"
           },
           "vehicle_id": {
+            "format": "uuid",
             "title": "Vehicle Id",
-            "type": "integer"
+            "type": "string"
           }
         },
         "required": [
@@ -629,8 +1313,9 @@
       "TripRead": {
         "properties": {
           "cargo_weight_kg": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
             "title": "Cargo Weight Kg",
-            "type": "number"
+            "type": "string"
           },
           "completed_at": {
             "anyOf": [
@@ -661,8 +1346,9 @@
             "title": "Dispatched At"
           },
           "driver_id": {
+            "format": "uuid",
             "title": "Driver Id",
-            "type": "integer"
+            "type": "string"
           },
           "driver_name": {
             "title": "Driver Name",
@@ -671,7 +1357,8 @@
           "final_odometer": {
             "anyOf": [
               {
-                "type": "integer"
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
               },
               {
                 "type": "null"
@@ -680,8 +1367,9 @@
             "title": "Final Odometer"
           },
           "planned_distance_km": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
             "title": "Planned Distance Km",
-            "type": "number"
+            "type": "string"
           },
           "source": {
             "title": "Source",
@@ -692,12 +1380,14 @@
             "type": "string"
           },
           "trip_id": {
+            "format": "uuid",
             "title": "Trip Id",
-            "type": "integer"
+            "type": "string"
           },
           "vehicle_id": {
+            "format": "uuid",
             "title": "Vehicle Id",
-            "type": "integer"
+            "type": "string"
           },
           "vehicle_name_model": {
             "title": "Vehicle Name Model",
@@ -706,6 +1396,10 @@
           "vehicle_reg_no": {
             "title": "Vehicle Reg No",
             "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
           }
         },
         "required": [
@@ -722,9 +1416,78 @@
           "final_odometer",
           "status",
           "dispatched_at",
-          "completed_at"
+          "completed_at",
+          "version"
         ],
         "title": "TripRead",
+        "type": "object"
+      },
+      "TripUpdate": {
+        "properties": {
+          "cargo_weight_kg": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Cargo Weight Kg"
+          },
+          "destination": {
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Destination",
+            "type": "string"
+          },
+          "driver_id": {
+            "format": "uuid",
+            "title": "Driver Id",
+            "type": "string"
+          },
+          "planned_distance_km": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Planned Distance Km"
+          },
+          "source": {
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Source",
+            "type": "string"
+          },
+          "vehicle_id": {
+            "format": "uuid",
+            "title": "Vehicle Id",
+            "type": "string"
+          },
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "source",
+          "destination",
+          "vehicle_id",
+          "driver_id",
+          "cargo_weight_kg",
+          "planned_distance_km",
+          "version"
+        ],
+        "title": "TripUpdate",
         "type": "object"
       },
       "ValidationError": {
@@ -770,26 +1533,50 @@
       "VehicleCreate": {
         "properties": {
           "acquisition_cost": {
-            "minimum": 0.0,
-            "title": "Acquisition Cost",
-            "type": "number"
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Acquisition Cost"
           },
           "max_capacity_kg": {
-            "exclusiveMinimum": 0.0,
-            "title": "Max Capacity Kg",
-            "type": "number"
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Max Capacity Kg"
           },
           "name_model": {
-            "maxLength": 64,
+            "maxLength": 80,
             "minLength": 1,
             "title": "Name Model",
             "type": "string"
           },
           "odometer": {
-            "default": 0,
-            "minimum": 0.0,
-            "title": "Odometer",
-            "type": "integer"
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "default": "0",
+            "title": "Odometer"
           },
           "reg_no": {
             "maxLength": 32,
@@ -820,20 +1607,23 @@
       "VehicleRead": {
         "properties": {
           "acquisition_cost": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
             "title": "Acquisition Cost",
-            "type": "number"
+            "type": "string"
           },
           "max_capacity_kg": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
             "title": "Max Capacity Kg",
-            "type": "number"
+            "type": "string"
           },
           "name_model": {
             "title": "Name Model",
             "type": "string"
           },
           "odometer": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
             "title": "Odometer",
-            "type": "integer"
+            "type": "string"
           },
           "reg_no": {
             "title": "Reg No",
@@ -848,7 +1638,12 @@
             "type": "string"
           },
           "vehicle_id": {
+            "format": "uuid",
             "title": "Vehicle Id",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
             "type": "integer"
           }
         },
@@ -860,10 +1655,66 @@
           "max_capacity_kg",
           "odometer",
           "acquisition_cost",
-          "status"
+          "status",
+          "version"
         ],
         "title": "VehicleRead",
         "type": "object"
+      },
+      "VehicleUpdate": {
+        "properties": {
+          "acquisition_cost": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Acquisition Cost"
+          },
+          "max_capacity_kg": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Max Capacity Kg"
+          },
+          "name_model": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name Model",
+            "type": "string"
+          },
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name_model",
+          "max_capacity_kg",
+          "acquisition_cost",
+          "version"
+        ],
+        "title": "VehicleUpdate",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "scheme": "bearer",
+        "type": "http"
       }
     }
   },
@@ -873,9 +1724,542 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/analytics/overview": {
+      "get": {
+        "operationId": "analytics_overview_api_v1_analytics_overview_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "date_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date_to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsOverview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Analytics Overview",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "logout_api_v1_auth_logout_post",
+        "parameters": [
+          {
+            "in": "cookie",
+            "name": "transitops_refresh",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Transitops Refresh"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Logout",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "me_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Me Api V1 Auth Me Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Me",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "operationId": "refresh_api_v1_auth_refresh_post",
+        "parameters": [
+          {
+            "in": "cookie",
+            "name": "transitops_refresh",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Transitops Refresh"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Refresh",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/switch-organization": {
+      "post": {
+        "operationId": "switch_organization_api_v1_auth_switch_organization_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SwitchOrganizationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Switch Organization",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/contact-submissions": {
+      "post": {
+        "operationId": "create_contact_api_v1_contact_submissions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContactCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Create Contact Api V1 Contact Submissions Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Contact",
+        "tags": [
+          "platform"
+        ]
+      }
+    },
+    "/api/v1/dashboard/summary": {
+      "get": {
+        "operationId": "dashboard_summary_api_v1_dashboard_summary_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Dashboard Summary",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/api/v1/documents": {
+      "post": {
+        "operationId": "initiate_document_api_v1_documents_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentUploadResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Initiate Document",
+        "tags": [
+          "platform"
+        ]
+      }
+    },
+    "/api/v1/documents/{document_id}": {
+      "delete": {
+        "operationId": "delete_document_api_v1_documents__document_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "document_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Document Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete Document",
+        "tags": [
+          "platform"
+        ]
+      }
+    },
+    "/api/v1/documents/{document_id}/complete": {
+      "post": {
+        "operationId": "complete_document_api_v1_documents__document_id__complete_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "document_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Document Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Complete Document",
+        "tags": [
+          "platform"
+        ]
+      }
+    },
+    "/api/v1/documents/{document_id}/download": {
+      "get": {
+        "operationId": "download_document_api_v1_documents__document_id__download_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "document_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Document Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Download Document Api V1 Documents  Document Id  Download Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Download Document",
+        "tags": [
+          "platform"
+        ]
+      }
+    },
     "/api/v1/drivers": {
       "get": {
-        "description": "List drivers. ``dispatchable=true`` returns only eligible drivers\n(Available with a licence that has not expired).",
         "operationId": "list_drivers_api_v1_drivers_get",
         "parameters": [
           {
@@ -886,6 +2270,23 @@
               "default": false,
               "title": "Dispatchable",
               "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 80,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
             }
           }
         ],
@@ -915,13 +2316,17 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "List Drivers",
         "tags": [
           "drivers"
         ]
       },
       "post": {
-        "description": "Create a driver profile. ``license_no`` must be unique.",
         "operationId": "create_driver_api_v1_drivers_post",
         "requestBody": {
           "content": {
@@ -955,7 +2360,155 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Create Driver",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/v1/drivers/{driver_id}": {
+      "delete": {
+        "operationId": "archive_driver_api_v1_drivers__driver_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "driver_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Driver Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Archive Driver",
+        "tags": [
+          "drivers"
+        ]
+      },
+      "get": {
+        "operationId": "get_driver_api_v1_drivers__driver_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "driver_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Driver Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriverRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Driver",
+        "tags": [
+          "drivers"
+        ]
+      },
+      "patch": {
+        "operationId": "update_driver_api_v1_drivers__driver_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "driver_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Driver Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DriverUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriverRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update Driver",
         "tags": [
           "drivers"
         ]
@@ -963,7 +2516,6 @@
     },
     "/api/v1/drivers/{driver_id}/status": {
       "patch": {
-        "description": "Manually change a driver's duty status (Screen 3 inline control).\n\n'On Trip' is managed by the dispatcher and cannot be set by hand here.",
         "operationId": "update_driver_status_api_v1_drivers__driver_id__status_patch",
         "parameters": [
           {
@@ -971,8 +2523,9 @@
             "name": "driver_id",
             "required": true,
             "schema": {
+              "format": "uuid",
               "title": "Driver Id",
-              "type": "integer"
+              "type": "string"
             }
           }
         ],
@@ -1008,6 +2561,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Update Driver Status",
         "tags": [
           "drivers"
@@ -1016,7 +2574,6 @@
     },
     "/api/v1/expenses": {
       "get": {
-        "description": "List expenses newest first, optionally scoped to a vehicle. Includes both\nmanual (Toll/Other) and auto-posted Maintenance rows.",
         "operationId": "list_expenses_api_v1_expenses_get",
         "parameters": [
           {
@@ -1026,7 +2583,8 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "integer"
+                  "format": "uuid",
+                  "type": "string"
                 },
                 {
                   "type": "null"
@@ -1062,13 +2620,17 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "List Expenses",
         "tags": [
           "finance"
         ]
       },
       "post": {
-        "description": "Record a manual Toll or Other expense. Maintenance expenses are posted\nautomatically from the maintenance screen, so they cannot be created here.",
         "operationId": "create_expense_api_v1_expenses_post",
         "requestBody": {
           "content": {
@@ -1102,7 +2664,128 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Create Expense",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/expenses/{expense_id}/approve": {
+      "post": {
+        "operationId": "approve_expense_api_v1_expenses__expense_id__approve_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "expense_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Expense Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpenseDecision"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Approve Expense",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/expenses/{expense_id}/reject": {
+      "post": {
+        "operationId": "reject_expense_api_v1_expenses__expense_id__reject_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "expense_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Expense Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpenseDecision"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Reject Expense",
         "tags": [
           "finance"
         ]
@@ -1110,7 +2793,6 @@
     },
     "/api/v1/fuel": {
       "get": {
-        "description": "List fuel logs newest first, optionally scoped to a vehicle.",
         "operationId": "list_fuel_api_v1_fuel_get",
         "parameters": [
           {
@@ -1120,7 +2802,8 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "integer"
+                  "format": "uuid",
+                  "type": "string"
                 },
                 {
                   "type": "null"
@@ -1156,13 +2839,17 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "List Fuel",
         "tags": [
           "finance"
         ]
       },
       "post": {
-        "description": "Log fuel for a vehicle, optionally attributed to one of its trips.",
         "operationId": "create_fuel_api_v1_fuel_post",
         "requestBody": {
           "content": {
@@ -1196,6 +2883,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Create Fuel",
         "tags": [
           "finance"
@@ -1256,26 +2948,7 @@
     },
     "/api/v1/maintenance": {
       "get": {
-        "description": "List maintenance records newest first, optionally scoped to a vehicle.",
         "operationId": "list_maintenance_api_v1_maintenance_get",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "vehicle_id",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Vehicle Id"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "content": {
@@ -1290,25 +2963,19 @@
               }
             },
             "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "List Maintenance",
         "tags": [
           "maintenance"
         ]
       },
       "post": {
-        "description": "Log a maintenance record and apply its side effects.\n\nActive -> vehicle set to In Shop. trip_id set -> auto-post a Maintenance\nexpense linked back to this record (only when the trip belongs to the\nvehicle).",
         "operationId": "create_maintenance_api_v1_maintenance_post",
         "requestBody": {
           "content": {
@@ -1342,27 +3009,42 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Create Maintenance",
         "tags": [
           "maintenance"
         ]
       }
     },
-    "/api/v1/maintenance/{maintenance_id}/close": {
+    "/api/v1/maintenance/{maintenance_id}/cancel": {
       "post": {
-        "description": "Complete a maintenance record. The vehicle returns to Available unless it\nwas Retired (rule 10).",
-        "operationId": "close_maintenance_api_v1_maintenance__maintenance_id__close_post",
+        "operationId": "cancel_maintenance_api_v1_maintenance__maintenance_id__cancel_post",
         "parameters": [
           {
             "in": "path",
             "name": "maintenance_id",
             "required": true,
             "schema": {
+              "format": "uuid",
               "title": "Maintenance Id",
-              "type": "integer"
+              "type": "string"
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaintenanceTransition"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "content": {
@@ -1385,44 +3067,48 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Close Maintenance",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Cancel Maintenance",
         "tags": [
           "maintenance"
         ]
       }
     },
-    "/api/v1/trips": {
-      "get": {
-        "description": "List trips newest first. ``vehicle_id`` scopes results to one vehicle,\nwhich powers the optional trip pickers on the fuel and maintenance screens.",
-        "operationId": "list_trips_api_v1_trips_get",
+    "/api/v1/maintenance/{maintenance_id}/close": {
+      "post": {
+        "operationId": "close_maintenance_api_v1_maintenance__maintenance_id__close_post",
         "parameters": [
           {
-            "in": "query",
-            "name": "vehicle_id",
-            "required": false,
+            "in": "path",
+            "name": "maintenance_id",
+            "required": true,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Vehicle Id"
+              "format": "uuid",
+              "title": "Maintenance Id",
+              "type": "string"
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaintenanceTransition"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/TripRead"
-                  },
-                  "title": "Response List Trips Api V1 Trips Get",
-                  "type": "array"
+                  "$ref": "#/components/schemas/MaintenanceRead"
                 }
               }
             },
@@ -1439,13 +3125,434 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Close Maintenance",
+        "tags": [
+          "maintenance"
+        ]
+      }
+    },
+    "/api/v1/memberships": {
+      "get": {
+        "operationId": "list_memberships_api_v1_memberships_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Memberships",
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "operationId": "list_notifications_api_v1_notifications_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Notifications",
+        "tags": [
+          "platform"
+        ]
+      }
+    },
+    "/api/v1/notifications/read-all": {
+      "post": {
+        "operationId": "read_all_notifications_api_v1_notifications_read_all_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Read All Notifications",
+        "tags": [
+          "platform"
+        ]
+      }
+    },
+    "/api/v1/notifications/{notification_id}/read": {
+      "post": {
+        "operationId": "read_notification_api_v1_notifications__notification_id__read_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "notification_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Notification Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Read Notification",
+        "tags": [
+          "platform"
+        ]
+      }
+    },
+    "/api/v1/organizations/current": {
+      "get": {
+        "operationId": "current_organization_api_v1_organizations_current_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Current Organization",
+        "tags": [
+          "organizations"
+        ]
+      },
+      "patch": {
+        "operationId": "update_organization_api_v1_organizations_current_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizationUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update Organization",
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/api/v1/organizations/current/settings": {
+      "get": {
+        "operationId": "current_settings_api_v1_organizations_current_settings_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Current Settings",
+        "tags": [
+          "organizations"
+        ]
+      },
+      "patch": {
+        "operationId": "update_settings_api_v1_organizations_current_settings_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update Settings",
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/api/v1/report-exports": {
+      "post": {
+        "operationId": "create_export_api_v1_report_exports_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Export",
+        "tags": [
+          "platform"
+        ]
+      }
+    },
+    "/api/v1/report-exports/{report_id}": {
+      "get": {
+        "operationId": "get_export_api_v1_report_exports__report_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Report Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Export",
+        "tags": [
+          "platform"
+        ]
+      }
+    },
+    "/api/v1/report-exports/{report_id}/download": {
+      "get": {
+        "operationId": "download_export_api_v1_report_exports__report_id__download_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Report Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Download Export Api V1 Report Exports  Report Id  Download Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Download Export",
+        "tags": [
+          "platform"
+        ]
+      }
+    },
+    "/api/v1/trips": {
+      "get": {
+        "operationId": "list_trips_api_v1_trips_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TripRead"
+                  },
+                  "title": "Response List Trips Api V1 Trips Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "List Trips",
         "tags": [
           "trips"
         ]
       },
       "post": {
-        "description": "Create a Draft trip. Dispatch happens as a separate, validated step.",
         "operationId": "create_trip_api_v1_trips_post",
         "requestBody": {
           "content": {
@@ -1479,24 +3586,29 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Create Trip",
         "tags": [
           "trips"
         ]
       }
     },
-    "/api/v1/trips/{trip_id}/cancel": {
-      "post": {
-        "description": "Cancel a Draft or Dispatched trip. A dispatched trip releases its\nvehicle and driver back to Available.",
-        "operationId": "cancel_trip_api_v1_trips__trip_id__cancel_post",
+    "/api/v1/trips/{trip_id}": {
+      "get": {
+        "operationId": "get_trip_api_v1_trips__trip_id__get",
         "parameters": [
           {
             "in": "path",
             "name": "trip_id",
             "required": true,
             "schema": {
+              "format": "uuid",
               "title": "Trip Id",
-              "type": "integer"
+              "type": "string"
             }
           }
         ],
@@ -1522,6 +3634,125 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Trip",
+        "tags": [
+          "trips"
+        ]
+      },
+      "patch": {
+        "operationId": "update_trip_api_v1_trips__trip_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trip_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Trip Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update Trip",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
+    "/api/v1/trips/{trip_id}/cancel": {
+      "post": {
+        "operationId": "cancel_trip_api_v1_trips__trip_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trip_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Trip Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripCancel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Cancel Trip",
         "tags": [
           "trips"
@@ -1530,7 +3761,6 @@
     },
     "/api/v1/trips/{trip_id}/complete": {
       "post": {
-        "description": "Dispatched -> Completed. Writes final_odometer, rolls the vehicle\nodometer forward, and returns vehicle and driver to Available.",
         "operationId": "complete_trip_api_v1_trips__trip_id__complete_post",
         "parameters": [
           {
@@ -1538,8 +3768,26 @@
             "name": "trip_id",
             "required": true,
             "schema": {
+              "format": "uuid",
               "title": "Trip Id",
-              "type": "integer"
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
             }
           }
         ],
@@ -1575,6 +3823,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Complete Trip",
         "tags": [
           "trips"
@@ -1583,7 +3836,6 @@
     },
     "/api/v1/trips/{trip_id}/dispatch": {
       "post": {
-        "description": "Draft -> Dispatched. Enforces capacity, vehicle/driver availability, and\nthe no-double-booking rule, then flags both resources On Trip.",
         "operationId": "dispatch_trip_api_v1_trips__trip_id__dispatch_post",
         "parameters": [
           {
@@ -1591,8 +3843,26 @@
             "name": "trip_id",
             "required": true,
             "schema": {
+              "format": "uuid",
               "title": "Trip Id",
-              "type": "integer"
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
             }
           }
         ],
@@ -1618,6 +3888,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Dispatch Trip",
         "tags": [
           "trips"
@@ -1626,7 +3901,6 @@
     },
     "/api/v1/vehicles": {
       "get": {
-        "description": "List vehicles, newest first. ``dispatchable=true`` returns only the pool\neligible for trip dispatch (Available; never Retired or In Shop).",
         "operationId": "list_vehicles_api_v1_vehicles_get",
         "parameters": [
           {
@@ -1637,6 +3911,46 @@
               "default": false,
               "title": "Dispatchable",
               "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 80,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
             }
           }
         ],
@@ -1666,13 +3980,17 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "List Vehicles",
         "tags": [
           "vehicles"
         ]
       },
       "post": {
-        "description": "Register a new vehicle. ``reg_no`` must be unique.",
         "operationId": "create_vehicle_api_v1_vehicles_post",
         "requestBody": {
           "content": {
@@ -1706,7 +4024,155 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Create Vehicle",
+        "tags": [
+          "vehicles"
+        ]
+      }
+    },
+    "/api/v1/vehicles/{vehicle_id}": {
+      "delete": {
+        "operationId": "archive_vehicle_api_v1_vehicles__vehicle_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "vehicle_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Vehicle Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Archive Vehicle",
+        "tags": [
+          "vehicles"
+        ]
+      },
+      "get": {
+        "operationId": "get_vehicle_api_v1_vehicles__vehicle_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "vehicle_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Vehicle Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Vehicle",
+        "tags": [
+          "vehicles"
+        ]
+      },
+      "patch": {
+        "operationId": "update_vehicle_api_v1_vehicles__vehicle_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "vehicle_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Vehicle Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VehicleUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update Vehicle",
         "tags": [
           "vehicles"
         ]

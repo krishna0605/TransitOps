@@ -28,7 +28,9 @@
     "db:upgrade": "python -m alembic -c apps/api/alembic.ini upgrade head",
     "db:downgrade": "python -m alembic -c apps/api/alembic.ini downgrade -1",
     "infra:up": "docker compose up -d postgres",
-    "infra:down": "docker compose down"
+    "infra:down": "docker compose down",
+    "docker:build": "docker compose build api worker migrate",
+    "docker:smoke": "docker compose up -d --wait api worker && docker compose exec -T api python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/ready')\""
   },
   "devDependencies": {
     "concurrently": "^10.0.3"

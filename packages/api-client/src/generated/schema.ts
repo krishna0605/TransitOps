@@ -4,6 +4,210 @@
  */
 
 export interface paths {
+    "/api/v1/analytics/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Analytics Overview */
+        get: operations["analytics_overview_api_v1_analytics_overview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Login */
+        post: operations["login_api_v1_auth_login_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Logout */
+        post: operations["logout_api_v1_auth_logout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Me */
+        get: operations["me_api_v1_auth_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Refresh */
+        post: operations["refresh_api_v1_auth_refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/switch-organization": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Switch Organization */
+        post: operations["switch_organization_api_v1_auth_switch_organization_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contact-submissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Contact */
+        post: operations["create_contact_api_v1_contact_submissions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dashboard/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dashboard Summary */
+        get: operations["dashboard_summary_api_v1_dashboard_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Initiate Document */
+        post: operations["initiate_document_api_v1_documents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Document */
+        delete: operations["delete_document_api_v1_documents__document_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Complete Document */
+        post: operations["complete_document_api_v1_documents__document_id__complete_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Document */
+        get: operations["download_document_api_v1_documents__document_id__download_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/drivers": {
         parameters: {
             query?: never;
@@ -11,22 +215,34 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * List Drivers
-         * @description List drivers. ``dispatchable=true`` returns only eligible drivers
-         *     (Available with a licence that has not expired).
-         */
+        /** List Drivers */
         get: operations["list_drivers_api_v1_drivers_get"];
         put?: never;
-        /**
-         * Create Driver
-         * @description Create a driver profile. ``license_no`` must be unique.
-         */
+        /** Create Driver */
         post: operations["create_driver_api_v1_drivers_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/drivers/{driver_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Driver */
+        get: operations["get_driver_api_v1_drivers__driver_id__get"];
+        put?: never;
+        post?: never;
+        /** Archive Driver */
+        delete: operations["archive_driver_api_v1_drivers__driver_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Driver */
+        patch: operations["update_driver_api_v1_drivers__driver_id__patch"];
         trace?: never;
     };
     "/api/v1/drivers/{driver_id}/status": {
@@ -42,12 +258,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /**
-         * Update Driver Status
-         * @description Manually change a driver's duty status (Screen 3 inline control).
-         *
-         *     'On Trip' is managed by the dispatcher and cannot be set by hand here.
-         */
+        /** Update Driver Status */
         patch: operations["update_driver_status_api_v1_drivers__driver_id__status_patch"];
         trace?: never;
     };
@@ -58,19 +269,45 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * List Expenses
-         * @description List expenses newest first, optionally scoped to a vehicle. Includes both
-         *     manual (Toll/Other) and auto-posted Maintenance rows.
-         */
+        /** List Expenses */
         get: operations["list_expenses_api_v1_expenses_get"];
         put?: never;
-        /**
-         * Create Expense
-         * @description Record a manual Toll or Other expense. Maintenance expenses are posted
-         *     automatically from the maintenance screen, so they cannot be created here.
-         */
+        /** Create Expense */
         post: operations["create_expense_api_v1_expenses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/expenses/{expense_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve Expense */
+        post: operations["approve_expense_api_v1_expenses__expense_id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/expenses/{expense_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject Expense */
+        post: operations["reject_expense_api_v1_expenses__expense_id__reject_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -84,16 +321,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * List Fuel
-         * @description List fuel logs newest first, optionally scoped to a vehicle.
-         */
+        /** List Fuel */
         get: operations["list_fuel_api_v1_fuel_get"];
         put?: never;
-        /**
-         * Create Fuel
-         * @description Log fuel for a vehicle, optionally attributed to one of its trips.
-         */
+        /** Create Fuel */
         post: operations["create_fuel_api_v1_fuel_post"];
         delete?: never;
         options?: never;
@@ -142,21 +373,28 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * List Maintenance
-         * @description List maintenance records newest first, optionally scoped to a vehicle.
-         */
+        /** List Maintenance */
         get: operations["list_maintenance_api_v1_maintenance_get"];
         put?: never;
-        /**
-         * Create Maintenance
-         * @description Log a maintenance record and apply its side effects.
-         *
-         *     Active -> vehicle set to In Shop. trip_id set -> auto-post a Maintenance
-         *     expense linked back to this record (only when the trip belongs to the
-         *     vehicle).
-         */
+        /** Create Maintenance */
         post: operations["create_maintenance_api_v1_maintenance_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/{maintenance_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Maintenance */
+        post: operations["cancel_maintenance_api_v1_maintenance__maintenance_id__cancel_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -172,12 +410,163 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Close Maintenance
-         * @description Complete a maintenance record. The vehicle returns to Available unless it
-         *     was Retired (rule 10).
-         */
+        /** Close Maintenance */
         post: operations["close_maintenance_api_v1_maintenance__maintenance_id__close_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/memberships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Memberships */
+        get: operations["list_memberships_api_v1_memberships_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Notifications */
+        get: operations["list_notifications_api_v1_notifications_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Read All Notifications */
+        post: operations["read_all_notifications_api_v1_notifications_read_all_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/{notification_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Read Notification */
+        post: operations["read_notification_api_v1_notifications__notification_id__read_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/current": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Current Organization */
+        get: operations["current_organization_api_v1_organizations_current_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Organization */
+        patch: operations["update_organization_api_v1_organizations_current_patch"];
+        trace?: never;
+    };
+    "/api/v1/organizations/current/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Current Settings */
+        get: operations["current_settings_api_v1_organizations_current_settings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Settings */
+        patch: operations["update_settings_api_v1_organizations_current_settings_patch"];
+        trace?: never;
+    };
+    "/api/v1/report-exports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Export */
+        post: operations["create_export_api_v1_report_exports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/report-exports/{report_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Export */
+        get: operations["get_export_api_v1_report_exports__report_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/report-exports/{report_id}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Export */
+        get: operations["download_export_api_v1_report_exports__report_id__download_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -191,22 +580,33 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * List Trips
-         * @description List trips newest first. ``vehicle_id`` scopes results to one vehicle,
-         *     which powers the optional trip pickers on the fuel and maintenance screens.
-         */
+        /** List Trips */
         get: operations["list_trips_api_v1_trips_get"];
         put?: never;
-        /**
-         * Create Trip
-         * @description Create a Draft trip. Dispatch happens as a separate, validated step.
-         */
+        /** Create Trip */
         post: operations["create_trip_api_v1_trips_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Trip */
+        get: operations["get_trip_api_v1_trips__trip_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Trip */
+        patch: operations["update_trip_api_v1_trips__trip_id__patch"];
         trace?: never;
     };
     "/api/v1/trips/{trip_id}/cancel": {
@@ -218,11 +618,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Cancel Trip
-         * @description Cancel a Draft or Dispatched trip. A dispatched trip releases its
-         *     vehicle and driver back to Available.
-         */
+        /** Cancel Trip */
         post: operations["cancel_trip_api_v1_trips__trip_id__cancel_post"];
         delete?: never;
         options?: never;
@@ -239,11 +635,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Complete Trip
-         * @description Dispatched -> Completed. Writes final_odometer, rolls the vehicle
-         *     odometer forward, and returns vehicle and driver to Available.
-         */
+        /** Complete Trip */
         post: operations["complete_trip_api_v1_trips__trip_id__complete_post"];
         delete?: never;
         options?: never;
@@ -260,11 +652,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Dispatch Trip
-         * @description Draft -> Dispatched. Enforces capacity, vehicle/driver availability, and
-         *     the no-double-booking rule, then flags both resources On Trip.
-         */
+        /** Dispatch Trip */
         post: operations["dispatch_trip_api_v1_trips__trip_id__dispatch_post"];
         delete?: never;
         options?: never;
@@ -279,17 +667,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * List Vehicles
-         * @description List vehicles, newest first. ``dispatchable=true`` returns only the pool
-         *     eligible for trip dispatch (Available; never Retired or In Shop).
-         */
+        /** List Vehicles */
         get: operations["list_vehicles_api_v1_vehicles_get"];
         put?: never;
-        /**
-         * Create Vehicle
-         * @description Register a new vehicle. ``reg_no`` must be unique.
-         */
+        /** Create Vehicle */
         post: operations["create_vehicle_api_v1_vehicles_post"];
         delete?: never;
         options?: never;
@@ -297,10 +678,114 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/vehicles/{vehicle_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Vehicle */
+        get: operations["get_vehicle_api_v1_vehicles__vehicle_id__get"];
+        put?: never;
+        post?: never;
+        /** Archive Vehicle */
+        delete: operations["archive_vehicle_api_v1_vehicles__vehicle_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Vehicle */
+        patch: operations["update_vehicle_api_v1_vehicles__vehicle_id__patch"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AnalyticsOverview */
+        AnalyticsOverview: {
+            /** Average Cost Per Trip */
+            average_cost_per_trip: string;
+            /** Completed Trips */
+            completed_trips: number;
+            /** Fleet Utilization Percent */
+            fleet_utilization_percent: string;
+            /** Fuel Cost */
+            fuel_cost: string;
+            /** Fuel Efficiency Km Per Liter */
+            fuel_efficiency_km_per_liter: string;
+            /** Fuel Liters */
+            fuel_liters: string;
+            /** Maintenance Cost */
+            maintenance_cost: string;
+            /** Operational Cost */
+            operational_cost: string;
+            /** Other Approved Cost */
+            other_approved_cost: string;
+            /** Total Distance Km */
+            total_distance_km: string;
+        };
+        /** ContactCreate */
+        ContactCreate: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /** Message */
+            message: string;
+            /** Name */
+            name: string;
+            /** Topic */
+            topic: string;
+        };
+        /** DashboardSummary */
+        DashboardSummary: {
+            /** Active Trips */
+            active_trips: number;
+            /** Available Vehicles */
+            available_vehicles: number;
+            /** Completed Trips */
+            completed_trips: number;
+            /** In Maintenance */
+            in_maintenance: number;
+            /** Pending Expenses */
+            pending_expenses: number;
+            /** Total Vehicles */
+            total_vehicles: number;
+        };
+        /** DocumentCreate */
+        DocumentCreate: {
+            /** Content Type */
+            content_type: string;
+            /** Document Type */
+            document_type: string;
+            /**
+             * Entity Id
+             * Format: uuid
+             */
+            entity_id: string;
+            /** Entity Type */
+            entity_type: string;
+            /** Filename */
+            filename: string;
+            /** Size Bytes */
+            size_bytes: number;
+        };
+        /** DocumentUploadResponse */
+        DocumentUploadResponse: {
+            /**
+             * Document Id
+             * Format: uuid
+             */
+            document_id: string;
+            /**
+             * Expires In
+             * @default 900
+             */
+            expires_in: number;
+            /** Upload Url */
+            upload_url: string;
+        };
         /** DriverCreate */
         DriverCreate: {
             /** Contact */
@@ -323,14 +808,17 @@ export interface components {
              * Safety Score
              * @default 100
              */
-            safety_score: number;
+            safety_score: number | string;
         };
         /** DriverRead */
         DriverRead: {
             /** Contact */
             contact: string;
-            /** Driver Id */
-            driver_id: number;
+            /**
+             * Driver Id
+             * Format: uuid
+             */
+            driver_id: string;
             /** License Category */
             license_category: string;
             /**
@@ -343,9 +831,11 @@ export interface components {
             /** Name */
             name: string;
             /** Safety Score */
-            safety_score: number;
+            safety_score: string;
             /** Status */
             status: string;
+            /** Version */
+            version: number;
         };
         /** DriverStatusUpdate */
         DriverStatusUpdate: {
@@ -353,7 +843,25 @@ export interface components {
              * Status
              * @enum {string}
              */
-            status: "Available" | "On Trip" | "Off Duty" | "Suspended";
+            status: "AVAILABLE" | "OFF_DUTY" | "SUSPENDED";
+            /** Version */
+            version: number;
+        };
+        /** DriverUpdate */
+        DriverUpdate: {
+            /** Contact */
+            contact: string;
+            /**
+             * License Expiry
+             * Format: date
+             */
+            license_expiry: string;
+            /** Name */
+            name: string;
+            /** Safety Score */
+            safety_score: number | string;
+            /** Version */
+            version: number;
         };
         /** ErrorResponse */
         ErrorResponse: {
@@ -371,73 +879,114 @@ export interface components {
         /** ExpenseCreate */
         ExpenseCreate: {
             /** Amount */
-            amount: number;
+            amount: number | string;
             /**
              * Category
-             * @default Toll
              * @enum {string}
              */
-            category: "Toll" | "Other";
+            category: "TOLL" | "PARKING" | "INSURANCE" | "PERMIT" | "OTHER";
+            /** Description */
+            description?: string | null;
             /** Trip Id */
-            trip_id?: number | null;
+            trip_id?: string | null;
             /** Vehicle Id */
-            vehicle_id: number;
+            vehicle_id?: string | null;
+        };
+        /** ExpenseDecision */
+        ExpenseDecision: {
+            /** Reason */
+            reason?: string | null;
+            /** Version */
+            version: number;
         };
         /** ExpenseRead */
         ExpenseRead: {
             /** Amount */
-            amount: number;
+            amount: string;
             /** Category */
             category: string;
-            /** Expense Id */
-            expense_id: number;
+            /** Currency */
+            currency: string;
+            /** Description */
+            description: string | null;
+            /**
+             * Expense Id
+             * Format: uuid
+             */
+            expense_id: string;
+            /** Fuel Id */
+            fuel_id: string | null;
             /** Maintenance Id */
-            maintenance_id: number | null;
+            maintenance_id: string | null;
             /** Status */
             status: string;
             /** Trip Id */
-            trip_id: number | null;
+            trip_id: string | null;
             /** Trip Label */
-            trip_label: string | null;
+            trip_label?: string | null;
             /** Vehicle Id */
-            vehicle_id: number;
+            vehicle_id: string | null;
             /** Vehicle Reg No */
-            vehicle_reg_no: string;
+            vehicle_reg_no?: string | null;
+            /** Version */
+            version: number;
+        };
+        /** ExportCreate */
+        ExportCreate: {
+            /** Filters */
+            filters?: {
+                [key: string]: unknown;
+            };
+            /** Report Type */
+            report_type: string;
         };
         /** FuelCreate */
         FuelCreate: {
             /** Cost */
-            cost: number;
+            cost: number | string;
             /** Fuel Date */
             fuel_date?: string | null;
             /** Liters */
-            liters: number;
+            liters: number | string;
+            /** Odometer */
+            odometer?: number | string | null;
             /** Trip Id */
-            trip_id?: number | null;
-            /** Vehicle Id */
-            vehicle_id: number;
+            trip_id?: string | null;
+            /**
+             * Vehicle Id
+             * Format: uuid
+             */
+            vehicle_id: string;
         };
         /** FuelRead */
         FuelRead: {
             /** Cost */
-            cost: number;
+            cost: string;
             /**
              * Fuel Date
              * Format: date
              */
             fuel_date: string;
-            /** Fuel Id */
-            fuel_id: number;
+            /**
+             * Fuel Id
+             * Format: uuid
+             */
+            fuel_id: string;
             /** Liters */
-            liters: number;
+            liters: string;
+            /** Odometer */
+            odometer: string | null;
             /** Trip Id */
-            trip_id: number | null;
-            /** Trip Label */
-            trip_label: string | null;
-            /** Vehicle Id */
-            vehicle_id: number;
+            trip_id: string | null;
+            /**
+             * Vehicle Id
+             * Format: uuid
+             */
+            vehicle_id: string;
             /** Vehicle Reg No */
             vehicle_reg_no: string;
+            /** Version */
+            version: number;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -459,33 +1008,49 @@ export interface components {
             /** Version */
             version: string;
         };
+        /** LoginRequest */
+        LoginRequest: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /** Password */
+            password: string;
+        };
         /** MaintenanceCreate */
         MaintenanceCreate: {
             /** Cost */
-            cost: number;
+            cost: number | string;
+            /**
+             * Priority
+             * @default NORMAL
+             * @enum {string}
+             */
+            priority: "LOW" | "NORMAL" | "HIGH" | "CRITICAL";
             /** Service Date */
             service_date?: string | null;
             /** Service Type */
             service_type: string;
-            /**
-             * Status
-             * @default Active
-             * @enum {string}
-             */
-            status: "Active" | "Completed";
             /** Trip Id */
-            trip_id?: number | null;
-            /** Vehicle Id */
-            vehicle_id: number;
+            trip_id?: string | null;
+            /**
+             * Vehicle Id
+             * Format: uuid
+             */
+            vehicle_id: string;
         };
         /** MaintenanceRead */
         MaintenanceRead: {
             /** Cost */
-            cost: number;
-            /** Linked Expense Id */
-            linked_expense_id: number | null;
-            /** Maintenance Id */
-            maintenance_id: number;
+            cost: string;
+            /**
+             * Maintenance Id
+             * Format: uuid
+             */
+            maintenance_id: string;
+            /** Priority */
+            priority: string;
             /**
              * Service Date
              * Format: date
@@ -496,11 +1061,28 @@ export interface components {
             /** Status */
             status: string;
             /** Trip Id */
-            trip_id: number | null;
-            /** Vehicle Id */
-            vehicle_id: number;
+            trip_id: string | null;
+            /**
+             * Vehicle Id
+             * Format: uuid
+             */
+            vehicle_id: string;
             /** Vehicle Reg No */
             vehicle_reg_no: string;
+            /** Version */
+            version: number;
+        };
+        /** MaintenanceTransition */
+        MaintenanceTransition: {
+            /** Version */
+            version: number;
+        };
+        /** OrganizationUpdate */
+        OrganizationUpdate: {
+            /** Name */
+            name: string;
+            /** Version */
+            version: number;
         };
         /** ReadinessResponse */
         ReadinessResponse: {
@@ -510,62 +1092,172 @@ export interface components {
              */
             database: "ready" | "skipped";
             /**
+             * Redis
+             * @enum {string}
+             */
+            redis: "ready" | "skipped";
+            /**
              * Status
              * @default ready
              * @constant
              */
             status: "ready";
+            /**
+             * Storage
+             * @enum {string}
+             */
+            storage: "ready" | "skipped";
+        };
+        /** SessionResponse */
+        SessionResponse: {
+            /** Access Token */
+            access_token: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /**
+             * Membership Id
+             * Format: uuid
+             */
+            membership_id: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /** Role */
+            role: string;
+            /**
+             * Token Type
+             * @default bearer
+             */
+            token_type: string;
+            /**
+             * User Id
+             * Format: uuid
+             */
+            user_id: string;
+        };
+        /** SettingsUpdate */
+        SettingsUpdate: {
+            /** Currency */
+            currency: string;
+            /** Distance Unit */
+            distance_unit: string;
+            /** Timezone */
+            timezone: string;
+            /** Version */
+            version: number;
+        };
+        /** SwitchOrganizationRequest */
+        SwitchOrganizationRequest: {
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+        };
+        /** TripCancel */
+        TripCancel: {
+            /** Reason */
+            reason: string;
+            /** Version */
+            version: number;
         };
         /** TripComplete */
         TripComplete: {
             /** Final Odometer */
-            final_odometer?: number | null;
+            final_odometer?: number | string | null;
+            /** Version */
+            version: number;
         };
         /** TripCreate */
         TripCreate: {
             /** Cargo Weight Kg */
-            cargo_weight_kg: number;
+            cargo_weight_kg: number | string;
             /** Destination */
             destination: string;
-            /** Driver Id */
-            driver_id: number;
+            /**
+             * Driver Id
+             * Format: uuid
+             */
+            driver_id: string;
             /** Planned Distance Km */
-            planned_distance_km: number;
+            planned_distance_km: number | string;
             /** Source */
             source: string;
-            /** Vehicle Id */
-            vehicle_id: number;
+            /**
+             * Vehicle Id
+             * Format: uuid
+             */
+            vehicle_id: string;
         };
         /** TripRead */
         TripRead: {
             /** Cargo Weight Kg */
-            cargo_weight_kg: number;
+            cargo_weight_kg: string;
             /** Completed At */
             completed_at: string | null;
             /** Destination */
             destination: string;
             /** Dispatched At */
             dispatched_at: string | null;
-            /** Driver Id */
-            driver_id: number;
+            /**
+             * Driver Id
+             * Format: uuid
+             */
+            driver_id: string;
             /** Driver Name */
             driver_name: string;
             /** Final Odometer */
-            final_odometer: number | null;
+            final_odometer: string | null;
             /** Planned Distance Km */
-            planned_distance_km: number;
+            planned_distance_km: string;
             /** Source */
             source: string;
             /** Status */
             status: string;
-            /** Trip Id */
-            trip_id: number;
-            /** Vehicle Id */
-            vehicle_id: number;
+            /**
+             * Trip Id
+             * Format: uuid
+             */
+            trip_id: string;
+            /**
+             * Vehicle Id
+             * Format: uuid
+             */
+            vehicle_id: string;
             /** Vehicle Name Model */
             vehicle_name_model: string;
             /** Vehicle Reg No */
             vehicle_reg_no: string;
+            /** Version */
+            version: number;
+        };
+        /** TripUpdate */
+        TripUpdate: {
+            /** Cargo Weight Kg */
+            cargo_weight_kg: number | string;
+            /** Destination */
+            destination: string;
+            /**
+             * Driver Id
+             * Format: uuid
+             */
+            driver_id: string;
+            /** Planned Distance Km */
+            planned_distance_km: number | string;
+            /** Source */
+            source: string;
+            /**
+             * Vehicle Id
+             * Format: uuid
+             */
+            vehicle_id: string;
+            /** Version */
+            version: number;
         };
         /** ValidationError */
         ValidationError: {
@@ -583,16 +1275,16 @@ export interface components {
         /** VehicleCreate */
         VehicleCreate: {
             /** Acquisition Cost */
-            acquisition_cost: number;
+            acquisition_cost: number | string;
             /** Max Capacity Kg */
-            max_capacity_kg: number;
+            max_capacity_kg: number | string;
             /** Name Model */
             name_model: string;
             /**
              * Odometer
              * @default 0
              */
-            odometer: number;
+            odometer: number | string;
             /** Reg No */
             reg_no: string;
             /**
@@ -604,21 +1296,37 @@ export interface components {
         /** VehicleRead */
         VehicleRead: {
             /** Acquisition Cost */
-            acquisition_cost: number;
+            acquisition_cost: string;
             /** Max Capacity Kg */
-            max_capacity_kg: number;
+            max_capacity_kg: string;
             /** Name Model */
             name_model: string;
             /** Odometer */
-            odometer: number;
+            odometer: string;
             /** Reg No */
             reg_no: string;
             /** Status */
             status: string;
             /** Type */
             type: string;
-            /** Vehicle Id */
-            vehicle_id: number;
+            /**
+             * Vehicle Id
+             * Format: uuid
+             */
+            vehicle_id: string;
+            /** Version */
+            version: number;
+        };
+        /** VehicleUpdate */
+        VehicleUpdate: {
+            /** Acquisition Cost */
+            acquisition_cost: number | string;
+            /** Max Capacity Kg */
+            max_capacity_kg: number | string;
+            /** Name Model */
+            name_model: string;
+            /** Version */
+            version: number;
         };
     };
     responses: never;
@@ -629,10 +1337,372 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    analytics_overview_api_v1_analytics_overview_get: {
+        parameters: {
+            query?: {
+                date_from?: string | null;
+                date_to?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalyticsOverview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    login_api_v1_auth_login_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    logout_api_v1_auth_logout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                transitops_refresh?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    me_api_v1_auth_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    refresh_api_v1_auth_refresh_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                transitops_refresh?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    switch_organization_api_v1_auth_switch_organization_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SwitchOrganizationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_contact_api_v1_contact_submissions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContactCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    dashboard_summary_api_v1_dashboard_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardSummary"];
+                };
+            };
+        };
+    };
+    initiate_document_api_v1_documents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DocumentCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentUploadResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_document_api_v1_documents__document_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    complete_document_api_v1_documents__document_id__complete_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_document_api_v1_documents__document_id__download_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_drivers_api_v1_drivers_get: {
         parameters: {
             query?: {
                 dispatchable?: boolean;
+                search?: string | null;
             };
             header?: never;
             path?: never;
@@ -693,12 +1763,107 @@ export interface operations {
             };
         };
     };
+    get_driver_api_v1_drivers__driver_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                driver_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DriverRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    archive_driver_api_v1_drivers__driver_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                driver_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_driver_api_v1_drivers__driver_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                driver_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DriverUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DriverRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     update_driver_status_api_v1_drivers__driver_id__status_patch: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                driver_id: number;
+                driver_id: string;
             };
             cookie?: never;
         };
@@ -731,7 +1896,7 @@ export interface operations {
     list_expenses_api_v1_expenses_get: {
         parameters: {
             query?: {
-                vehicle_id?: number | null;
+                vehicle_id?: string | null;
             };
             header?: never;
             path?: never;
@@ -792,10 +1957,80 @@ export interface operations {
             };
         };
     };
+    approve_expense_api_v1_expenses__expense_id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                expense_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExpenseDecision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpenseRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reject_expense_api_v1_expenses__expense_id__reject_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                expense_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExpenseDecision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpenseRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_fuel_api_v1_fuel_get: {
         parameters: {
             query?: {
-                vehicle_id?: number | null;
+                vehicle_id?: string | null;
             };
             header?: never;
             path?: never;
@@ -907,9 +2142,7 @@ export interface operations {
     };
     list_maintenance_api_v1_maintenance_get: {
         parameters: {
-            query?: {
-                vehicle_id?: number | null;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -923,15 +2156,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MaintenanceRead"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -969,16 +2193,20 @@ export interface operations {
             };
         };
     };
-    close_maintenance_api_v1_maintenance__maintenance_id__close_post: {
+    cancel_maintenance_api_v1_maintenance__maintenance_id__cancel_post: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                maintenance_id: number;
+                maintenance_id: string;
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceTransition"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -1000,11 +2228,336 @@ export interface operations {
             };
         };
     };
+    close_maintenance_api_v1_maintenance__maintenance_id__close_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                maintenance_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceTransition"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaintenanceRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_memberships_api_v1_memberships_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    list_notifications_api_v1_notifications_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    read_all_notifications_api_v1_notifications_read_all_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_notification_api_v1_notifications__notification_id__read_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notification_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    current_organization_api_v1_organizations_current_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    update_organization_api_v1_organizations_current_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrganizationUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    current_settings_api_v1_organizations_current_settings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    update_settings_api_v1_organizations_current_settings_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SettingsUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_export_api_v1_report_exports_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExportCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_export_api_v1_report_exports__report_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_export_api_v1_report_exports__report_id__download_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_trips_api_v1_trips_get: {
         parameters: {
-            query?: {
-                vehicle_id?: number | null;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -1018,15 +2571,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TripRead"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -1064,12 +2608,12 @@ export interface operations {
             };
         };
     };
-    cancel_trip_api_v1_trips__trip_id__cancel_post: {
+    get_trip_api_v1_trips__trip_id__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                trip_id: number;
+                trip_id: string;
             };
             cookie?: never;
         };
@@ -1095,12 +2639,84 @@ export interface operations {
             };
         };
     };
-    complete_trip_api_v1_trips__trip_id__complete_post: {
+    update_trip_api_v1_trips__trip_id__patch: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                trip_id: number;
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TripUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_trip_api_v1_trips__trip_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TripCancel"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    complete_trip_api_v1_trips__trip_id__complete_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path: {
+                trip_id: string;
             };
             cookie?: never;
         };
@@ -1133,9 +2749,11 @@ export interface operations {
     dispatch_trip_api_v1_trips__trip_id__dispatch_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
             path: {
-                trip_id: number;
+                trip_id: string;
             };
             cookie?: never;
         };
@@ -1165,6 +2783,9 @@ export interface operations {
         parameters: {
             query?: {
                 dispatchable?: boolean;
+                search?: string | null;
+                limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -1207,6 +2828,101 @@ export interface operations {
         responses: {
             /** @description Successful Response */
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_vehicle_api_v1_vehicles__vehicle_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                vehicle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    archive_vehicle_api_v1_vehicles__vehicle_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                vehicle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_vehicle_api_v1_vehicles__vehicle_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                vehicle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VehicleUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -1,5 +1,25 @@
 name: transitops
 
+x-api-environment: &api-environment
+  APP_ENV: ${APP_ENV:-development}
+  DEBUG: ${DEBUG:-true}
+  DATABASE_URL: postgresql+psycopg://transitops:transitops@postgres:5432/transitops
+  DATABASE_CHECK_ON_STARTUP: "true"
+  JWT_SECRET_KEY: ${JWT_SECRET_KEY:-development-only-secret-change-before-production}
+  REDIS_URL: redis://redis:6379/0
+  S3_ENDPOINT_URL: http://minio:9000
+  S3_ACCESS_KEY: ${MINIO_ROOT_USER:-transitops}
+  S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-transitops-local-only}
+  S3_BUCKET: transitops
+  CORS_ORIGINS: '["http://localhost:3000"]'
+
+x-api-image: &api-image
+  image: transitops-api:local
+  build:
+    context: .
+    dockerfile: apps/api/Dockerfile
+  environment: *api-environment
+
 services:
   postgres:
     image: postgres:17-alpine
@@ -7,48 +27,92 @@ services:
       POSTGRES_DB: transitops
       POSTGRES_USER: transitops
       POSTGRES_PASSWORD: transitops
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
+    ports: ["5432:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U transitops -d transitops"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 20
     restart: unless-stopped
 
   redis:
     image: redis:8-alpine
-    profiles: ["extended"]
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
+    ports: ["6379:6379"]
+    volumes: ["redis-data:/data"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
-      retries: 10
+      retries: 20
     restart: unless-stopped
 
   minio:
-    image: minio/minio:latest
-    profiles: ["extended"]
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: transitops
-      MINIO_ROOT_PASSWORD: transitops-local-only
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    volumes:
-      - minio-data:/data
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-transitops}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-transitops-local-only}
+    ports: ["9000:9000", "9001:9001"]
+    volumes: ["minio-data:/data"]
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 20
+    restart: unless-stopped
+
+  minio-init:
+    image: minio/mc:RELEASE.2025-04-16T18-13-26Z
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} &&
+        mc mb --ignore-existing local/transitops
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-transitops}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-transitops-local-only}
+    restart: "no"
+
+  migrate:
+    <<: *api-image
+    command: ["python", "-m", "alembic", "-c", "apps/api/alembic.ini", "upgrade", "head"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    <<: *api-image
+    command: ["uvicorn", "app.main:app", "--app-dir", "apps/api", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+    ports: ["8000:8000"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/ready')"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  worker:
+    <<: *api-image
+    command: ["dramatiq", "app.workers.reports", "app.workers.outbox", "--processes", "1", "--threads", "4"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
     restart: unless-stopped
 
 volumes:

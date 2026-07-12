@@ -10,9 +10,21 @@ from app.db.models.driver import Driver
 from app.db.models.expense import Expense
 from app.db.models.fuel_log import FuelLog
 from app.db.models.maintenance_log import MaintenanceLog
-from app.db.models.role import Role
-from app.db.models.trip import Trip
-from app.db.models.user import User
+from app.db.models.platform import (
+    AuditLog,
+    ContactSubmission,
+    Document,
+    IdempotencyRecord,
+    Membership,
+    Notification,
+    Organization,
+    OrganizationSettings,
+    OutboxEvent,
+    RefreshSession,
+    ReportExport,
+    User,
+)
+from app.db.models.trip import Trip, TripStatusHistory
 from app.db.models.vehicle import Vehicle
 
 __all__ = [
@@ -21,8 +33,19 @@ __all__ = [
     "Expense",
     "FuelLog",
     "MaintenanceLog",
-    "Role",
+    "AuditLog",
+    "ContactSubmission",
+    "Document",
+    "IdempotencyRecord",
+    "Membership",
+    "Notification",
+    "Organization",
+    "OrganizationSettings",
+    "OutboxEvent",
+    "RefreshSession",
+    "ReportExport",
     "Trip",
+    "TripStatusHistory",
     "User",
     "Vehicle",
 ]

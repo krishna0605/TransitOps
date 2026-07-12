@@ -1,32 +1,25 @@
-from __future__ import annotations
-
 from datetime import date
-from typing import TYPE_CHECKING
+from decimal import Decimal
+from uuid import UUID
 
-from sqlalchemy import Date, Float, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Date, ForeignKey, Uuid
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
-
-if TYPE_CHECKING:
-    from app.db.models.trip import Trip
-    from app.db.models.vehicle import Vehicle
+from app.db.mixins import Measure, Money, TimestampMixin, UUIDPrimaryKeyMixin, VersionMixin
 
 
-class FuelLog(Base):
-    __tablename__ = "fuel_log"
+class FuelLog(UUIDPrimaryKeyMixin, TimestampMixin, VersionMixin, Base):
+    __tablename__ = "fuel_logs"
 
-    fuel_id: Mapped[int] = mapped_column(primary_key=True)
-    vehicle_id: Mapped[int] = mapped_column(
-        ForeignKey("vehicle.vehicle_id"), nullable=False, index=True
-    )
-    # Set when the fuel was logged as part of a specific trip; null for depot fills.
-    trip_id: Mapped[int | None] = mapped_column(
-        ForeignKey("trip.trip_id"), nullable=True, index=True
-    )
+    organization_id: Mapped[UUID] = mapped_column(Uuid, ForeignKey("organizations.id"), index=True)
+    vehicle_id: Mapped[UUID] = mapped_column(Uuid, ForeignKey("vehicles.id"), index=True)
+    trip_id: Mapped[UUID | None] = mapped_column(Uuid, ForeignKey("trips.id"), index=True)
     fuel_date: Mapped[date] = mapped_column(Date, nullable=False)
-    liters: Mapped[float] = mapped_column(Float, nullable=False)
-    cost: Mapped[float] = mapped_column(Float, nullable=False)
+    liters: Mapped[Decimal] = mapped_column(Measure, nullable=False)
+    cost: Mapped[Decimal] = mapped_column(Money, nullable=False)
+    odometer: Mapped[Decimal | None] = mapped_column(Measure)
 
-    vehicle: Mapped[Vehicle] = relationship(back_populates="fuel_logs")
-    trip: Mapped[Trip | None] = relationship(back_populates="fuel_logs")
+    @property
+    def fuel_id(self) -> UUID:
+        return self.id

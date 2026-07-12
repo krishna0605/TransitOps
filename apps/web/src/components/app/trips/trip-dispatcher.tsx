@@ -55,7 +55,7 @@ export function TripDispatcher() {
   const availableDrivers = drivers;
 
   const selectedVehicle = vehicles.find(
-    (vehicle) => vehicle.vehicle_id === Number(form.vehicle),
+    (vehicle) => vehicle.vehicle_id === form.vehicle,
   );
   const cargo = Number(form.cargo) || 0;
   const capacity = selectedVehicle?.max_capacity_kg ?? 0;
@@ -87,14 +87,15 @@ export function TripDispatcher() {
       const trip = await createTrip.mutateAsync({
         source: form.source,
         destination: form.destination,
-        vehicle_id: Number(form.vehicle),
-        driver_id: Number(form.driver),
+        vehicle_id: form.vehicle,
+        driver_id: form.driver,
         cargo_weight_kg: cargo,
         planned_distance_km: Number(form.distance),
       });
       await tripAction.mutateAsync({
         tripId: trip.trip_id,
         action: "dispatch",
+        version: trip.version,
       });
       toast.success("Trip dispatched", {
         description: `${trip.vehicle_name_model} · ${trip.driver_name}`,
@@ -107,9 +108,13 @@ export function TripDispatcher() {
     }
   }
 
-  async function advance(id: number, action: "complete" | "cancel") {
+  async function advance(
+    id: string,
+    action: "complete" | "cancel",
+    version: number,
+  ) {
     try {
-      await tripAction.mutateAsync({ tripId: id, action });
+      await tripAction.mutateAsync({ tripId: id, action, version });
       toast.success(`Trip ${action}d`);
     } catch (error) {
       toast.error(
@@ -301,14 +306,18 @@ export function TripDispatcher() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => advance(trip.trip_id, "complete")}
+                      onClick={() =>
+                        advance(trip.trip_id, "complete", trip.version)
+                      }
                     >
                       Complete
                     </Button>
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => advance(trip.trip_id, "cancel")}
+                      onClick={() =>
+                        advance(trip.trip_id, "cancel", trip.version)
+                      }
                     >
                       Cancel
                     </Button>
