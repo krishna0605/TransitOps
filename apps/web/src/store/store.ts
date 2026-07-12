@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 
+import { authReducer } from "@/store/auth-slice";
 import { uiReducer } from "@/store/ui-slice";
 
 export const createAppStore = () =>
   configureStore({
     reducer: {
+      auth: authReducer,
       ui: uiReducer,
     },
   });

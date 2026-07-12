@@ -13,30 +13,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-// Placeholder session — wired to real auth later.
-const CURRENT_USER = { name: "Raven K.", role: "Dispatcher", initials: "RK" };
+import { roleProfile } from "@/config/roles";
+import { useAppSelector } from "@/store/hooks";
 
 export function UserMenu() {
+  const role = useAppSelector((state) => state.auth.role);
+  const profile = roleProfile(role);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="gap-2 px-2">
           <Avatar className="size-7">
             <AvatarFallback className="bg-brand text-brand-foreground text-xs font-semibold">
-              {CURRENT_USER.initials}
+              {profile.initials}
             </AvatarFallback>
           </Avatar>
           <span className="hidden text-sm font-medium sm:inline">
-            {CURRENT_USER.name}
+            {profile.name}
           </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuLabel className="flex flex-col">
-          <span>{CURRENT_USER.name}</span>
+          <span>{profile.name}</span>
           <span className="text-muted-foreground text-xs font-normal">
-            {CURRENT_USER.role}
+            {role}
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

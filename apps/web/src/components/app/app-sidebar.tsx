@@ -15,10 +15,13 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { appNav } from "@/config/nav";
+import { navItemsForRole } from "@/config/nav";
+import { useAppSelector } from "@/store/hooks";
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const role = useAppSelector((state) => state.auth.role);
+  const items = navItemsForRole(role);
 
   return (
     <Sidebar collapsible="offcanvas">
@@ -35,7 +38,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {appNav.map((item) => {
+              {items.map((item) => {
                 const active =
                   pathname === item.href ||
                   pathname.startsWith(`${item.href}/`);

@@ -1,11 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 
 import { AppSidebar } from "@/components/app/app-sidebar";
 import { AppTopbar } from "@/components/app/app-topbar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { canAccessPath, navItemsForRole } from "@/config/nav";
+import { isAppRole, ROLE_STORAGE_KEY } from "@/config/roles";
+import { setRole } from "@/store/auth-slice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setSidebarOpen } from "@/store/ui-slice";
 
@@ -20,11 +24,27 @@ export function AppShell({
 }: Readonly<{ children: React.ReactNode }>) {
   const dispatch = useAppDispatch();
   const sidebarOpen = useAppSelector((state) => state.ui.sidebarOpen);
+  const role = useAppSelector((state) => state.auth.role);
   const reduceMotion = useReducedMotion();
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     dispatch(setSidebarOpen(readSidebarPreference()));
   }, [dispatch]);
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(ROLE_STORAGE_KEY);
+    if (isAppRole(stored)) {
+      dispatch(setRole(stored));
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!canAccessPath(role, pathname)) {
+      router.replace(navItemsForRole(role)[0]?.href ?? "/dashboard");
+    }
+  }, [role, pathname, router]);
 
   return (
     <SidebarProvider

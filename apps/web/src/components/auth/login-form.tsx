@@ -26,18 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const ROLES = [
-  "Fleet Manager",
-  "Dispatcher",
-  "Safety Officer",
-  "Financial Analyst",
-] as const;
+import { APP_ROLES, ROLE_STORAGE_KEY } from "@/config/roles";
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email address."),
   password: z.string().min(1, "Password is required."),
-  role: z.enum(ROLES),
+  role: z.enum(APP_ROLES),
   remember: z.boolean().optional(),
 });
 
@@ -56,7 +50,11 @@ export function LoginForm() {
   });
 
   function onSubmit(values: LoginValues) {
-    // Auth is not wired yet — take the user to the dashboard for the demo.
+    // Auth is not wired yet — persist the chosen role so the app gates access,
+    // then take the user to the dashboard for the demo.
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(ROLE_STORAGE_KEY, values.role);
+    }
     toast.success("Signed in", {
       description: `Welcome back, ${values.role}.`,
     });
@@ -117,7 +115,7 @@ export function LoginForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {ROLES.map((role) => (
+                  {APP_ROLES.map((role) => (
                     <SelectItem key={role} value={role}>
                       {role}
                     </SelectItem>
