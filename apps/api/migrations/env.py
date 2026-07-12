@@ -4,6 +4,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from app.core.config import get_settings
+from app.db import models  # noqa: F401  registers all tables on Base.metadata
 
 config = context.config
 if config.config_file_name is not None:
@@ -11,8 +12,7 @@ if config.config_file_name is not None:
 
 config.set_main_option("sqlalchemy.url", get_settings().database_url)
 
-# Kavish will attach the SQLAlchemy registry metadata when domain models are added.
-target_metadata = None
+target_metadata = models.Base.metadata
 
 
 def run_migrations_offline() -> None:
