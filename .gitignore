@@ -7,6 +7,7 @@
 node_modules/
 .next/
 coverage/
+*.tsbuildinfo
 
 # Python
 __pycache__/
@@ -16,6 +17,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 .coverage
+*.egg-info/
 
 # IDE and operating system
 .idea/
@@ -26,3 +28,4 @@ Thumbs.db
 # Local runtime data
 .data/
 *.log
+packages/api-client/openapi.json
