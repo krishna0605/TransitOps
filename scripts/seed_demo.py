@@ -24,8 +24,10 @@ import asyncio  # noqa: E402
 
 from sqlalchemy import select  # noqa: E402
 
-from app.core.database import session_factory  # noqa: E402
+import app.db.models  # noqa: E402,F401  (registers every table on Base.metadata)
+from app.core.database import engine, session_factory  # noqa: E402
 from app.core.security import hash_password  # noqa: E402
+from app.db.base import Base  # noqa: E402
 from app.db.models.platform import (  # noqa: E402
     Membership,
     Organization,
@@ -45,6 +47,12 @@ SEED_USERS: list[tuple[str, str, str]] = [
 
 
 async def main() -> None:
+    # Ensure the application schema exists. The bundled Alembic migration is
+    # stale relative to the current models, so create any missing tables from
+    # the ORM metadata (idempotent — existing tables are left untouched).
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
     async with session_factory() as session:
         # Ensure the demo organization exists.
         org = (
