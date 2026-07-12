@@ -18,6 +18,7 @@ export function DashboardView() {
       label: "Active vehicles",
       value: String(vehicles.length),
       tone: "default" as const,
+      href: "/fleet?status=active",
     },
     {
       label: "Available vehicles",
@@ -25,6 +26,7 @@ export function DashboardView() {
         vehicles.filter((item) => item.status === "Available").length,
       ),
       tone: "success" as const,
+      href: "/fleet?status=Available",
     },
     {
       label: "In maintenance",
@@ -32,6 +34,7 @@ export function DashboardView() {
         vehicles.filter((item) => item.status === "In Shop").length,
       ),
       tone: "warning" as const,
+      href: "/fleet?status=In+Shop",
     },
     {
       label: "Active trips",
@@ -39,11 +42,13 @@ export function DashboardView() {
         trips.filter((item) => item.status === "Dispatched").length,
       ),
       tone: "info" as const,
+      href: "/trips?status=Dispatched",
     },
     {
       label: "Draft trips",
       value: String(trips.filter((item) => item.status === "Draft").length),
       tone: "default" as const,
+      href: "/trips?status=Draft",
     },
     {
       label: "Available drivers",
@@ -51,6 +56,7 @@ export function DashboardView() {
         drivers.filter((item) => item.status === "Available").length,
       ),
       tone: "success" as const,
+      href: "/drivers?status=Available",
     },
   ];
 
