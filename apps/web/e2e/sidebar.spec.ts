@@ -22,7 +22,7 @@ test("desktop sidebar reserves page content space", async ({ page }) => {
           Math.round(element.getBoundingClientRect().left),
         ),
     )
-    .toBeLessThanOrEqual(50);
+    .toBeLessThanOrEqual(1);
 });
 
 test("mobile navigation opens as a sheet", async ({ page }) => {

@@ -21,7 +21,7 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="offcanvas">
       <SidebarHeader className="h-16 justify-center border-b px-4">
         <Link
           href="/dashboard"
