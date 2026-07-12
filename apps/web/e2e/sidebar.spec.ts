@@ -8,10 +8,21 @@ test("desktop sidebar reserves page content space", async ({ page }) => {
     const rect = element.getBoundingClientRect();
     return { left: rect.left, width: rect.width, viewport: window.innerWidth };
   });
-  expect(dimensions.left).toBeGreaterThanOrEqual(48);
+  expect(dimensions.left).toBeGreaterThanOrEqual(255);
   expect(dimensions.left + dimensions.width).toBeLessThanOrEqual(
     dimensions.viewport + 1,
   );
+
+  await page.locator("[data-sidebar=trigger]").click();
+  await expect
+    .poll(() =>
+      page
+        .locator("main")
+        .evaluate((element) =>
+          Math.round(element.getBoundingClientRect().left),
+        ),
+    )
+    .toBeLessThanOrEqual(50);
 });
 
 test("mobile navigation opens as a sheet", async ({ page }) => {
