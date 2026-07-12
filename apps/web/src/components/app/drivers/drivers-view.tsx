@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertTriangle, Plus, Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -46,7 +46,6 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import {
-  type Driver,
   useCreateDriver,
   useDrivers,
   useUpdateDriverStatus,
@@ -79,7 +78,7 @@ export function DriversView() {
   const driversQuery = useDrivers();
   const createDriver = useCreateDriver();
   const updateDriverStatus = useUpdateDriverStatus();
-  const items = driversQuery.data ?? [];
+  const items = driversQuery.data;
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [open, setOpen] = useState(false);
@@ -97,7 +96,7 @@ export function DriversView() {
 
   const filtered = useMemo(
     () =>
-      items.filter((d) => {
+      (items ?? []).filter((d) => {
         const matchesStatus =
           statusFilter === "All" || d.status === statusFilter;
         const q = search.trim().toLowerCase();
@@ -283,7 +282,7 @@ export function DriversView() {
           </SelectContent>
         </Select>
         <span className="text-muted-foreground ml-auto text-sm">
-          {filtered.length} of {items.length}
+          {filtered.length} of {items?.length ?? 0}
         </span>
       </div>
 

@@ -13,7 +13,6 @@ import {
   YAxis,
 } from "recharts";
 import { toast } from "sonner";
-import { useMemo } from "react";
 
 import { KpiCard } from "@/components/shared/kpi-card";
 import { PageHeader } from "@/components/shared/page-header";
@@ -54,48 +53,35 @@ export function AnalyticsView() {
   const maintenance = useMaintenance().data ?? [];
   const trips = useTrips().data ?? [];
   const vehicles = useVehicles().data ?? [];
-  const costBreakdown = useMemo(
-    () => [
-      {
-        category: "Fuel",
-        value: fuel.reduce((total, item) => total + item.cost, 0),
-      },
-      {
-        category: "Maintenance",
-        value: maintenance.reduce((total, item) => total + item.cost, 0),
-      },
-      {
-        category: "Other",
-        value: expenses.reduce((total, item) => total + item.amount, 0),
-      },
-    ],
-    [expenses, fuel, maintenance],
-  );
-  const costliestVehicles = useMemo(
-    () =>
-      vehicles
-        .map((vehicle) => ({
-          vehicle: vehicle.name_model,
-          cost: fuel
-            .filter((item) => item.vehicle_id === vehicle.vehicle_id)
-            .reduce((total, item) => total + item.cost, 0),
-        }))
-        .sort((left, right) => right.cost - left.cost)
-        .slice(0, 5),
-    [fuel, vehicles],
-  );
-  const monthlyRevenue = useMemo(
-    () => [
-      {
-        month: "Current",
-        value: trips.reduce(
-          (total, item) => total + item.planned_distance_km,
-          0,
-        ),
-      },
-    ],
-    [trips],
-  );
+  const costBreakdown = [
+    {
+      category: "Fuel",
+      value: fuel.reduce((total, item) => total + item.cost, 0),
+    },
+    {
+      category: "Maintenance",
+      value: maintenance.reduce((total, item) => total + item.cost, 0),
+    },
+    {
+      category: "Other",
+      value: expenses.reduce((total, item) => total + item.amount, 0),
+    },
+  ];
+  const costliestVehicles = vehicles
+    .map((vehicle) => ({
+      vehicle: vehicle.name_model,
+      cost: fuel
+        .filter((item) => item.vehicle_id === vehicle.vehicle_id)
+        .reduce((total, item) => total + item.cost, 0),
+    }))
+    .sort((left, right) => right.cost - left.cost)
+    .slice(0, 5);
+  const monthlyRevenue = [
+    {
+      month: "Current",
+      value: trips.reduce((total, item) => total + item.planned_distance_km, 0),
+    },
+  ];
   const analyticsKpis = [
     { label: "Fuel logs", value: String(fuel.length) },
     {

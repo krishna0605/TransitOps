@@ -44,7 +44,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { type Vehicle, useCreateVehicle, useVehicles } from "@/lib/api/hooks";
+import { useCreateVehicle, useVehicles } from "@/lib/api/hooks";
 
 const TYPES = ["Van", "Truck", "Mini"] as const;
 const STATUSES = ["Available", "On Trip", "In Shop", "Retired"] as const;
@@ -62,7 +62,7 @@ type VehicleValues = z.infer<typeof vehicleSchema>;
 export function FleetView() {
   const vehiclesQuery = useVehicles();
   const createVehicle = useCreateVehicle();
-  const items = vehiclesQuery.data ?? [];
+  const items = vehiclesQuery.data;
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -81,7 +81,7 @@ export function FleetView() {
 
   const filtered = useMemo(
     () =>
-      items.filter((v) => {
+      (items ?? []).filter((v) => {
         const matchesType = typeFilter === "All" || v.type === typeFilter;
         const matchesStatus =
           statusFilter === "All" || v.status === statusFilter;
@@ -299,7 +299,7 @@ export function FleetView() {
           </SelectContent>
         </Select>
         <span className="text-muted-foreground ml-auto text-sm">
-          {filtered.length} of {items.length}
+          {filtered.length} of {items?.length ?? 0}
         </span>
       </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { Fuel, Plus, Receipt } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/shared/page-header";
@@ -69,14 +69,9 @@ export function FuelExpenseView() {
   });
 
   // Operational cost = fuel + maintenance (per schema).
-  const operationalCost = useMemo(() => {
-    const fuelTotal = fuel.reduce((sum, f) => sum + f.cost, 0);
-    const maintTotal = (maintenanceQuery.data ?? []).reduce(
-      (sum, item) => sum + item.cost,
-      0,
-    );
-    return fuelTotal + maintTotal;
-  }, [fuel]);
+  const operationalCost =
+    fuel.reduce((sum, item) => sum + item.cost, 0) +
+    (maintenanceQuery.data ?? []).reduce((sum, item) => sum + item.cost, 0);
 
   async function addFuel() {
     if (!fuelForm.vehicle || !fuelForm.liters || !fuelForm.cost) {
