@@ -11,6 +11,8 @@ async def enforce_rate_limit(key: str, *, limit: int, window_seconds: int) -> No
         if count == 1:
             await client.expire(key, window_seconds)
         if count > limit:
-            raise AppError(code="RATE_LIMITED", message="Too many requests. Try again later.", status_code=429)
+            raise AppError(
+                code="RATE_LIMITED", message="Too many requests. Try again later.", status_code=429
+            )
     finally:
         await client.aclose()

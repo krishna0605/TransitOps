@@ -110,11 +110,16 @@ export function DriversView() {
   );
 
   async function changeStatus(
-    driverId: number,
+    driverId: string,
     status: (typeof DRIVER_STATUSES)[number],
+    version: number,
   ) {
+    if (status === "On Trip") return;
     try {
-      await updateDriverStatus.mutateAsync({ driverId, body: { status } });
+      await updateDriverStatus.mutateAsync({
+        driverId,
+        body: { status, version },
+      });
       toast.success("Driver status updated", { description: status });
     } catch (error) {
       toast.error(
@@ -342,6 +347,7 @@ export function DriversView() {
                         changeStatus(
                           d.driver_id,
                           v as (typeof DRIVER_STATUSES)[number],
+                          d.version,
                         )
                       }
                     >

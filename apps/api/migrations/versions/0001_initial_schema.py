@@ -9,8 +9,8 @@ from collections.abc import Sequence
 
 from alembic import op
 
-from app.db.base import Base
 from app.db import models as registered_models  # noqa: F401
+from app.db.base import Base
 
 revision: str = "0001_initial_schema"
 down_revision: str | None = None

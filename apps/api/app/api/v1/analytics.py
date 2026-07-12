@@ -40,14 +40,18 @@ class AnalyticsOverview(BaseModel):
 
 
 @router.get("/dashboard/summary", response_model=DashboardSummary)
-async def dashboard_summary(principal: CurrentPrincipal, session: DatabaseSession) -> DashboardSummary:
+async def dashboard_summary(
+    principal: CurrentPrincipal, session: DatabaseSession
+) -> DashboardSummary:
     vehicle_counts = (
         await session.execute(
             select(
                 func.count(Vehicle.id),
                 func.sum(case((Vehicle.status == "AVAILABLE", 1), else_=0)),
                 func.sum(case((Vehicle.status == "IN_SHOP", 1), else_=0)),
-            ).where(Vehicle.organization_id == principal.organization_id, Vehicle.archived_at.is_(None))
+            ).where(
+                Vehicle.organization_id == principal.organization_id, Vehicle.archived_at.is_(None)
+            )
         )
     ).one()
     trip_counts = (
@@ -81,7 +85,10 @@ async def analytics_overview(
     date_to: Annotated[date | None, Query()] = None,
 ) -> AnalyticsOverview:
     trip_filters = [Trip.organization_id == principal.organization_id, Trip.status == "COMPLETED"]
-    expense_filters = [Expense.organization_id == principal.organization_id, Expense.status == "APPROVED"]
+    expense_filters = [
+        Expense.organization_id == principal.organization_id,
+        Expense.status == "APPROVED",
+    ]
     fuel_filters = [FuelLog.organization_id == principal.organization_id]
     maintenance_filters = [MaintenanceLog.organization_id == principal.organization_id]
     if date_from:
@@ -99,12 +106,16 @@ async def analytics_overview(
 
     completed, distance = (
         await session.execute(
-            select(func.count(Trip.id), func.coalesce(func.sum(Trip.planned_distance_km), 0)).where(*trip_filters)
+            select(func.count(Trip.id), func.coalesce(func.sum(Trip.planned_distance_km), 0)).where(
+                *trip_filters
+            )
         )
     ).one()
     liters, fuel_cost = (
         await session.execute(
-            select(func.coalesce(func.sum(FuelLog.liters), 0), func.coalesce(func.sum(FuelLog.cost), 0)).where(*fuel_filters)
+            select(
+                func.coalesce(func.sum(FuelLog.liters), 0), func.coalesce(func.sum(FuelLog.cost), 0)
+            ).where(*fuel_filters)
         )
     ).one()
     maintenance_cost = await session.scalar(
@@ -113,7 +124,10 @@ async def analytics_overview(
     total_approved = await session.scalar(
         select(func.coalesce(func.sum(Expense.amount), 0)).where(*expense_filters)
     )
-    other_cost = max(Decimal(total_approved or 0) - Decimal(fuel_cost or 0) - Decimal(maintenance_cost or 0), Decimal(0))
+    other_cost = max(
+        Decimal(total_approved or 0) - Decimal(fuel_cost or 0) - Decimal(maintenance_cost or 0),
+        Decimal(0),
+    )
     operational = Decimal(total_approved or 0)
     total_vehicles = await session.scalar(
         select(func.count(Vehicle.id)).where(
@@ -135,6 +149,7 @@ async def analytics_overview(
         other_approved_cost=other_cost,
         operational_cost=operational,
         average_cost_per_trip=operational / completed_count if completed_count else Decimal(0),
-        fleet_utilization_percent=(Decimal(active_vehicles or 0) / Decimal(total_vehicles or 1)) * 100,
+        fleet_utilization_percent=(Decimal(active_vehicles or 0) / Decimal(total_vehicles or 1))
+        * 100,
         fuel_efficiency_km_per_liter=distance_value / liters_value if liters_value else Decimal(0),
     )

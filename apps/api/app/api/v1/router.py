@@ -1,6 +1,17 @@
 from fastapi import APIRouter
 
-from app.api.v1 import analytics, auth, drivers, finance, health, maintenance, organizations, platform, trips, vehicles
+from app.api.v1 import (
+    analytics,
+    auth,
+    drivers,
+    finance,
+    health,
+    maintenance,
+    organizations,
+    platform,
+    trips,
+    vehicles,
+)
 
 router = APIRouter()
 router.include_router(health.router)

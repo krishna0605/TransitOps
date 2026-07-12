@@ -80,7 +80,7 @@ export function FuelExpenseView() {
     }
     try {
       await createFuel.mutateAsync({
-        vehicle_id: Number(fuelForm.vehicle),
+        vehicle_id: fuelForm.vehicle,
         fuel_date: fuelForm.date || null,
         liters: Number(fuelForm.liters),
         cost: Number(fuelForm.cost),
@@ -108,8 +108,8 @@ export function FuelExpenseView() {
         ...(toll
           ? [
               createExpense.mutateAsync({
-                vehicle_id: Number(expenseForm.vehicle),
-                trip_id: expenseForm.trip ? Number(expenseForm.trip) : null,
+                vehicle_id: expenseForm.vehicle,
+                trip_id: expenseForm.trip || null,
                 category: "Toll",
                 amount: toll,
               }),
@@ -118,8 +118,8 @@ export function FuelExpenseView() {
         ...(other
           ? [
               createExpense.mutateAsync({
-                vehicle_id: Number(expenseForm.vehicle),
-                trip_id: expenseForm.trip ? Number(expenseForm.trip) : null,
+                vehicle_id: expenseForm.vehicle,
+                trip_id: expenseForm.trip || null,
                 category: "Other",
                 amount: other,
               }),

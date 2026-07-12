@@ -55,7 +55,7 @@ async def _bootstrap_development(session: DatabaseSession) -> None:
     organization = Organization(name="TransitOps", slug="transitops")
     user = User(
         name="TransitOps Admin",
-        email="admin@transitops.local",
+        email="admin@transitops.dev",
         password_hash=hash_password("transitops"),
     )
     session.add_all([organization, user])
@@ -128,7 +128,9 @@ async def _issue_session(
 
 
 @router.post("/login", response_model=SessionResponse)
-async def login(payload: LoginRequest, response: Response, session: DatabaseSession) -> SessionResponse:
+async def login(
+    payload: LoginRequest, response: Response, session: DatabaseSession
+) -> SessionResponse:
     await _bootstrap_development(session)
     user = (
         await session.execute(select(User).where(User.email == payload.email.lower()))
@@ -148,7 +150,9 @@ async def login(payload: LoginRequest, response: Response, session: DatabaseSess
         )
     ).scalar_one_or_none()
     if membership is None or user.status != "ACTIVE":
-        raise AppError(code="ACCOUNT_DISABLED", message="This account is not active.", status_code=403)
+        raise AppError(
+            code="ACCOUNT_DISABLED", message="This account is not active.", status_code=403
+        )
     return await _issue_session(session, response, user, membership)
 
 
@@ -161,7 +165,9 @@ async def refresh(
     from hashlib import sha256
 
     if transitops_refresh is None:
-        raise AppError(code="REFRESH_REQUIRED", message="A refresh token is required.", status_code=401)
+        raise AppError(
+            code="REFRESH_REQUIRED", message="A refresh token is required.", status_code=401
+        )
     token_hash = sha256(transitops_refresh.encode()).hexdigest()
     refresh_session = (
         await session.execute(
@@ -173,7 +179,9 @@ async def refresh(
         or refresh_session.revoked_at is not None
         or refresh_session.expires_at <= datetime.now(UTC)
     ):
-        raise AppError(code="INVALID_REFRESH_TOKEN", message="The refresh token is invalid.", status_code=401)
+        raise AppError(
+            code="INVALID_REFRESH_TOKEN", message="The refresh token is invalid.", status_code=401
+        )
     refresh_session.revoked_at = datetime.now(UTC)
     user = await session.get(User, refresh_session.user_id)
     membership = (
@@ -201,7 +209,9 @@ async def logout(
     if transitops_refresh:
         token_hash = sha256(transitops_refresh.encode()).hexdigest()
         refresh_session = (
-            await session.execute(select(RefreshSession).where(RefreshSession.token_hash == token_hash))
+            await session.execute(
+                select(RefreshSession).where(RefreshSession.token_hash == token_hash)
+            )
         ).scalar_one_or_none()
         if refresh_session is not None:
             refresh_session.revoked_at = datetime.now(UTC)
@@ -237,5 +247,7 @@ async def switch_organization(
     ).scalar_one_or_none()
     user = await session.get(User, principal.user_id)
     if membership is None or user is None:
-        raise AppError(code="MEMBERSHIP_NOT_FOUND", message="Membership was not found.", status_code=404)
+        raise AppError(
+            code="MEMBERSHIP_NOT_FOUND", message="Membership was not found.", status_code=404
+        )
     return await _issue_session(session, response, user, membership)

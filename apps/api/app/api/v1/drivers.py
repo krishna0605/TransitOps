@@ -51,7 +51,9 @@ class DriverStatusUpdate(BaseModel):
     version: int = Field(ge=1)
 
 
-async def _driver(session: DatabaseSession, organization_id: UUID, driver_id: UUID, *, lock: bool = False) -> Driver:
+async def _driver(
+    session: DatabaseSession, organization_id: UUID, driver_id: UUID, *, lock: bool = False
+) -> Driver:
     statement = select(Driver).where(
         Driver.id == driver_id,
         Driver.organization_id == organization_id,
@@ -76,20 +78,28 @@ async def list_drivers(
         Driver.organization_id == principal.organization_id, Driver.archived_at.is_(None)
     )
     if dispatchable:
-        statement = statement.where(Driver.status == "AVAILABLE", Driver.license_expiry >= date.today())
+        statement = statement.where(
+            Driver.status == "AVAILABLE", Driver.license_expiry >= date.today()
+        )
     if search:
         pattern = f"%{search.strip()}%"
-        statement = statement.where(or_(Driver.name.ilike(pattern), Driver.license_no.ilike(pattern)))
+        statement = statement.where(
+            or_(Driver.name.ilike(pattern), Driver.license_no.ilike(pattern))
+        )
     return list((await session.execute(statement.order_by(Driver.created_at.desc()))).scalars())
 
 
 @router.get("/{driver_id}", response_model=DriverRead)
-async def get_driver(driver_id: UUID, principal: CurrentPrincipal, session: DatabaseSession) -> Driver:
+async def get_driver(
+    driver_id: UUID, principal: CurrentPrincipal, session: DatabaseSession
+) -> Driver:
     return await _driver(session, principal.organization_id, driver_id)
 
 
 @router.post("", response_model=DriverRead, status_code=status.HTTP_201_CREATED)
-async def create_driver(payload: DriverCreate, principal: CurrentPrincipal, session: DatabaseSession) -> Driver:
+async def create_driver(
+    payload: DriverCreate, principal: CurrentPrincipal, session: DatabaseSession
+) -> Driver:
     if payload.license_expiry < date.today():
         raise AppError(code="LICENSE_EXPIRED", message="License expiry must be in the future.")
     driver = Driver(
@@ -106,7 +116,11 @@ async def create_driver(payload: DriverCreate, principal: CurrentPrincipal, sess
         await session.commit()
     except IntegrityError as exc:
         await session.rollback()
-        raise AppError(code="DRIVER_LICENSE_TAKEN", message="License number is already in use.", status_code=409) from exc
+        raise AppError(
+            code="DRIVER_LICENSE_TAKEN",
+            message="License number is already in use.",
+            status_code=409,
+        ) from exc
     await session.refresh(driver)
     return driver
 
@@ -117,7 +131,9 @@ async def update_driver(
 ) -> Driver:
     driver = await _driver(session, principal.organization_id, driver_id, lock=True)
     if driver.version != payload.version:
-        raise AppError(code="STALE_VERSION", message="Driver was updated elsewhere.", status_code=409)
+        raise AppError(
+            code="STALE_VERSION", message="Driver was updated elsewhere.", status_code=409
+        )
     driver.name = payload.name.strip()
     driver.license_expiry = payload.license_expiry
     driver.contact = payload.contact.strip()
@@ -137,9 +153,15 @@ async def update_driver_status(
 ) -> Driver:
     driver = await _driver(session, principal.organization_id, driver_id, lock=True)
     if driver.status == "ON_TRIP":
-        raise AppError(code="DRIVER_ON_TRIP", message="An assigned driver cannot change status.", status_code=409)
+        raise AppError(
+            code="DRIVER_ON_TRIP",
+            message="An assigned driver cannot change status.",
+            status_code=409,
+        )
     if driver.version != payload.version:
-        raise AppError(code="STALE_VERSION", message="Driver was updated elsewhere.", status_code=409)
+        raise AppError(
+            code="STALE_VERSION", message="Driver was updated elsewhere.", status_code=409
+        )
     driver.status = payload.status
     driver.version += 1
     await session.commit()
@@ -148,10 +170,14 @@ async def update_driver_status(
 
 
 @router.delete("/{driver_id}", status_code=204)
-async def archive_driver(driver_id: UUID, principal: CurrentPrincipal, session: DatabaseSession) -> None:
+async def archive_driver(
+    driver_id: UUID, principal: CurrentPrincipal, session: DatabaseSession
+) -> None:
     driver = await _driver(session, principal.organization_id, driver_id, lock=True)
     if driver.status == "ON_TRIP":
-        raise AppError(code="DRIVER_ON_TRIP", message="An assigned driver cannot be archived.", status_code=409)
+        raise AppError(
+            code="DRIVER_ON_TRIP", message="An assigned driver cannot be archived.", status_code=409
+        )
     driver.archived_at = datetime.now(UTC)
     driver.status = "OFF_DUTY"
     driver.version += 1

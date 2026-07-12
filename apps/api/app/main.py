@@ -26,7 +26,7 @@ def create_app() -> FastAPI:
         allow_origins=[str(origin).rstrip("/") for origin in settings.cors_origins],
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-        allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
+        allow_headers=["Authorization", "Content-Type", "X-Request-ID", "Idempotency-Key"],
         expose_headers=["X-Request-ID"],
     )
     register_exception_handlers(application)

@@ -1,6 +1,7 @@
 from typing import BinaryIO
 
-import boto3
+import boto3  # type: ignore[import-untyped]
+from botocore.config import Config  # type: ignore[import-untyped]
 
 from app.core.config import get_settings
 
@@ -15,6 +16,7 @@ class S3Storage:
             aws_access_key_id=settings.s3_access_key,
             aws_secret_access_key=settings.s3_secret_key.get_secret_value(),
             region_name=settings.s3_region,
+            config=Config(connect_timeout=1, read_timeout=1, retries={"max_attempts": 1}),
         )
 
     def presign_upload(self, key: str, content_type: str, expires: int = 900) -> str:

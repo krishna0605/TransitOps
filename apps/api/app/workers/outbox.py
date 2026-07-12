@@ -43,7 +43,7 @@ async def drain_outbox() -> int:
                 event.attempts += 1
                 event.last_error = type(exc).__name__
                 event.available_at = datetime.now(UTC) + timedelta(
-                    seconds=min(3600, 2 ** event.attempts)
+                    seconds=min(3600, 2**event.attempts)
                 )
         await session.commit()
     return processed

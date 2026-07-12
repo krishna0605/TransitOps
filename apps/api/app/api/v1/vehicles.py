@@ -5,7 +5,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Query, status
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy import func, or_, select
+from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
 
 from app.api.auth import CurrentPrincipal
@@ -45,7 +45,9 @@ class VehicleUpdate(BaseModel):
     version: int = Field(ge=1)
 
 
-async def _vehicle(session: DatabaseSession, organization_id: UUID, vehicle_id: UUID, *, lock: bool = False) -> Vehicle:
+async def _vehicle(
+    session: DatabaseSession, organization_id: UUID, vehicle_id: UUID, *, lock: bool = False
+) -> Vehicle:
     statement = select(Vehicle).where(
         Vehicle.id == vehicle_id,
         Vehicle.organization_id == organization_id,
@@ -75,18 +77,26 @@ async def list_vehicles(
         statement = statement.where(Vehicle.status == "AVAILABLE")
     if search:
         pattern = f"%{search.strip()}%"
-        statement = statement.where(or_(Vehicle.reg_no.ilike(pattern), Vehicle.name_model.ilike(pattern)))
-    result = await session.execute(statement.order_by(Vehicle.created_at.desc()).limit(limit).offset(offset))
+        statement = statement.where(
+            or_(Vehicle.reg_no.ilike(pattern), Vehicle.name_model.ilike(pattern))
+        )
+    result = await session.execute(
+        statement.order_by(Vehicle.created_at.desc()).limit(limit).offset(offset)
+    )
     return list(result.scalars())
 
 
 @router.get("/{vehicle_id}", response_model=VehicleRead)
-async def get_vehicle(vehicle_id: UUID, principal: CurrentPrincipal, session: DatabaseSession) -> Vehicle:
+async def get_vehicle(
+    vehicle_id: UUID, principal: CurrentPrincipal, session: DatabaseSession
+) -> Vehicle:
     return await _vehicle(session, principal.organization_id, vehicle_id)
 
 
 @router.post("", response_model=VehicleRead, status_code=status.HTTP_201_CREATED)
-async def create_vehicle(payload: VehicleCreate, principal: CurrentPrincipal, session: DatabaseSession) -> Vehicle:
+async def create_vehicle(
+    payload: VehicleCreate, principal: CurrentPrincipal, session: DatabaseSession
+) -> Vehicle:
     vehicle = Vehicle(
         organization_id=principal.organization_id,
         reg_no=payload.reg_no.strip().upper(),
@@ -101,7 +111,11 @@ async def create_vehicle(payload: VehicleCreate, principal: CurrentPrincipal, se
         await session.commit()
     except IntegrityError as exc:
         await session.rollback()
-        raise AppError(code="VEHICLE_REG_NO_TAKEN", message="Registration number is already in use.", status_code=409) from exc
+        raise AppError(
+            code="VEHICLE_REG_NO_TAKEN",
+            message="Registration number is already in use.",
+            status_code=409,
+        ) from exc
     await session.refresh(vehicle)
     return vehicle
 
@@ -112,7 +126,9 @@ async def update_vehicle(
 ) -> Vehicle:
     vehicle = await _vehicle(session, principal.organization_id, vehicle_id, lock=True)
     if vehicle.version != payload.version:
-        raise AppError(code="STALE_VERSION", message="Vehicle was updated elsewhere.", status_code=409)
+        raise AppError(
+            code="STALE_VERSION", message="Vehicle was updated elsewhere.", status_code=409
+        )
     vehicle.name_model = payload.name_model.strip()
     vehicle.max_capacity_kg = payload.max_capacity_kg
     vehicle.acquisition_cost = payload.acquisition_cost
@@ -123,10 +139,14 @@ async def update_vehicle(
 
 
 @router.delete("/{vehicle_id}", status_code=204)
-async def archive_vehicle(vehicle_id: UUID, principal: CurrentPrincipal, session: DatabaseSession) -> None:
+async def archive_vehicle(
+    vehicle_id: UUID, principal: CurrentPrincipal, session: DatabaseSession
+) -> None:
     vehicle = await _vehicle(session, principal.organization_id, vehicle_id, lock=True)
     if vehicle.status in {"ON_TRIP", "IN_SHOP"}:
-        raise AppError(code="VEHICLE_IN_USE", message="An active vehicle cannot be archived.", status_code=409)
+        raise AppError(
+            code="VEHICLE_IN_USE", message="An active vehicle cannot be archived.", status_code=409
+        )
     vehicle.archived_at = datetime.now(UTC)
     vehicle.status = "RETIRED"
     vehicle.version += 1

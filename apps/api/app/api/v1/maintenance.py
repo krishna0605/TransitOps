@@ -46,7 +46,9 @@ class MaintenanceTransition(BaseModel):
     version: int = Field(ge=1)
 
 
-async def _load(session: DatabaseSession, organization_id: UUID, maintenance_id: UUID, *, lock: bool = False) -> MaintenanceLog:
+async def _load(
+    session: DatabaseSession, organization_id: UUID, maintenance_id: UUID, *, lock: bool = False
+) -> MaintenanceLog:
     statement = select(MaintenanceLog).where(
         MaintenanceLog.id == maintenance_id, MaintenanceLog.organization_id == organization_id
     )
@@ -54,7 +56,11 @@ async def _load(session: DatabaseSession, organization_id: UUID, maintenance_id:
         statement = statement.with_for_update()
     record = (await session.execute(statement)).scalar_one_or_none()
     if record is None:
-        raise AppError(code="MAINTENANCE_NOT_FOUND", message="Maintenance record was not found.", status_code=404)
+        raise AppError(
+            code="MAINTENANCE_NOT_FOUND",
+            message="Maintenance record was not found.",
+            status_code=404,
+        )
     return record
 
 
@@ -76,7 +82,9 @@ async def _read(session: DatabaseSession, record: MaintenanceLog) -> Maintenance
 
 
 @router.get("", response_model=list[MaintenanceRead])
-async def list_maintenance(principal: CurrentPrincipal, session: DatabaseSession) -> list[MaintenanceRead]:
+async def list_maintenance(
+    principal: CurrentPrincipal, session: DatabaseSession
+) -> list[MaintenanceRead]:
     records = list(
         (
             await session.execute(
@@ -96,18 +104,31 @@ async def create_maintenance(
     vehicle = (
         await session.execute(
             select(Vehicle)
-            .where(Vehicle.id == payload.vehicle_id, Vehicle.organization_id == principal.organization_id)
+            .where(
+                Vehicle.id == payload.vehicle_id,
+                Vehicle.organization_id == principal.organization_id,
+            )
             .with_for_update()
         )
     ).scalar_one_or_none()
     if vehicle is None:
         raise AppError(code="VEHICLE_NOT_FOUND", message="Vehicle was not found.", status_code=404)
     if vehicle.status in {"ON_TRIP", "IN_SHOP", "RETIRED"}:
-        raise AppError(code="VEHICLE_UNAVAILABLE", message="Vehicle cannot enter maintenance.", status_code=409)
+        raise AppError(
+            code="VEHICLE_UNAVAILABLE", message="Vehicle cannot enter maintenance.", status_code=409
+        )
     if payload.trip_id:
         trip = await session.get(Trip, payload.trip_id)
-        if trip is None or trip.organization_id != principal.organization_id or trip.vehicle_id != vehicle.id:
-            raise AppError(code="TRIP_VEHICLE_MISMATCH", message="Trip does not belong to this vehicle.", status_code=409)
+        if (
+            trip is None
+            or trip.organization_id != principal.organization_id
+            or trip.vehicle_id != vehicle.id
+        ):
+            raise AppError(
+                code="TRIP_VEHICLE_MISMATCH",
+                message="Trip does not belong to this vehicle.",
+                status_code=409,
+            )
     active = (
         await session.execute(
             select(MaintenanceLog).where(
@@ -118,7 +139,11 @@ async def create_maintenance(
         )
     ).scalar_one_or_none()
     if active:
-        raise AppError(code="MAINTENANCE_ALREADY_ACTIVE", message="Vehicle already has active maintenance.", status_code=409)
+        raise AppError(
+            code="MAINTENANCE_ALREADY_ACTIVE",
+            message="Vehicle already has active maintenance.",
+            status_code=409,
+        )
     record = MaintenanceLog(
         organization_id=principal.organization_id,
         vehicle_id=vehicle.id,
@@ -148,8 +173,20 @@ async def create_maintenance(
     vehicle.status = "IN_SHOP"
     session.add_all(
         [
-            AuditLog(organization_id=principal.organization_id, actor_id=principal.user_id, action="created", entity_type="maintenance", entity_id=record.id),
-            OutboxEvent(organization_id=principal.organization_id, event_type="maintenance.created", aggregate_type="maintenance", aggregate_id=record.id, payload={"maintenance_id": str(record.id)}),
+            AuditLog(
+                organization_id=principal.organization_id,
+                actor_id=principal.user_id,
+                action="created",
+                entity_type="maintenance",
+                entity_id=record.id,
+            ),
+            OutboxEvent(
+                organization_id=principal.organization_id,
+                event_type="maintenance.created",
+                aggregate_type="maintenance",
+                aggregate_id=record.id,
+                payload={"maintenance_id": str(record.id)},
+            ),
         ]
     )
     await session.commit()
@@ -165,25 +202,47 @@ async def _transition(
 ) -> MaintenanceRead:
     record = await _load(session, principal.organization_id, maintenance_id, lock=True)
     if record.status != "ACTIVE" or record.version != payload.version:
-        raise AppError(code="MAINTENANCE_CONFLICT", message="Maintenance cannot transition.", status_code=409)
+        raise AppError(
+            code="MAINTENANCE_CONFLICT", message="Maintenance cannot transition.", status_code=409
+        )
     vehicle = (
-        await session.execute(select(Vehicle).where(Vehicle.id == record.vehicle_id).with_for_update())
+        await session.execute(
+            select(Vehicle).where(Vehicle.id == record.vehicle_id).with_for_update()
+        )
     ).scalar_one()
     record.status = target
     record.closed_at = datetime.now(UTC)
     record.version += 1
     if vehicle.status == "IN_SHOP":
         vehicle.status = "AVAILABLE"
-    session.add(AuditLog(organization_id=principal.organization_id, actor_id=principal.user_id, action=target.lower(), entity_type="maintenance", entity_id=record.id))
+    session.add(
+        AuditLog(
+            organization_id=principal.organization_id,
+            actor_id=principal.user_id,
+            action=target.lower(),
+            entity_type="maintenance",
+            entity_id=record.id,
+        )
+    )
     await session.commit()
     return await _read(session, record)
 
 
 @router.post("/{maintenance_id}/close", response_model=MaintenanceRead)
-async def close_maintenance(maintenance_id: UUID, payload: MaintenanceTransition, principal: CurrentPrincipal, session: DatabaseSession) -> MaintenanceRead:
+async def close_maintenance(
+    maintenance_id: UUID,
+    payload: MaintenanceTransition,
+    principal: CurrentPrincipal,
+    session: DatabaseSession,
+) -> MaintenanceRead:
     return await _transition(maintenance_id, payload, principal, session, "COMPLETED")
 
 
 @router.post("/{maintenance_id}/cancel", response_model=MaintenanceRead)
-async def cancel_maintenance(maintenance_id: UUID, payload: MaintenanceTransition, principal: CurrentPrincipal, session: DatabaseSession) -> MaintenanceRead:
+async def cancel_maintenance(
+    maintenance_id: UUID,
+    payload: MaintenanceTransition,
+    principal: CurrentPrincipal,
+    session: DatabaseSession,
+) -> MaintenanceRead:
     return await _transition(maintenance_id, payload, principal, session, "CANCELLED")
