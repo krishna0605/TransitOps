@@ -35,14 +35,13 @@ from app.db.models.platform import (  # noqa: E402
     User,
 )
 
-PASSWORD = "transitops"
-
-# (email, display name, role) — role strings must match the app's ROLE_NAMES.
-SEED_USERS: list[tuple[str, str, str]] = [
-    ("manager@transitops.dev", "Fleet Manager", "Fleet Manager"),
-    ("dispatcher@transitops.dev", "Dana Dispatcher", "Dispatcher"),
-    ("safety@transitops.dev", "Sam Safety", "Safety Officer"),
-    ("finance@transitops.dev", "Fin Analyst", "Financial Analyst"),
+# (email, display name, role, password) — role strings must match the app's ROLE_NAMES.
+# Each role gets its own distinct login.
+SEED_USERS: list[tuple[str, str, str, str]] = [
+    ("fleet.manager@transitops.app", "Fleet Manager", "Fleet Manager", "Fleet@2026"),
+    ("dispatcher@transitops.app", "Dana Dispatcher", "Dispatcher", "Dispatch@2026"),
+    ("safety.officer@transitops.app", "Sam Safety", "Safety Officer", "Safety@2026"),
+    ("finance.analyst@transitops.app", "Fin Analyst", "Financial Analyst", "Finance@2026"),
 ]
 
 
@@ -67,7 +66,7 @@ async def main() -> None:
             session.add(OrganizationSettings(organization_id=org.id))
 
         # Ensure each demo user + membership exists.
-        for email, name, role in SEED_USERS:
+        for email, name, role, password in SEED_USERS:
             user = (
                 await session.execute(select(User).where(User.email == email))
             ).scalar_one_or_none()
@@ -75,7 +74,7 @@ async def main() -> None:
                 user = User(
                     name=name,
                     email=email,
-                    password_hash=hash_password(PASSWORD),
+                    password_hash=hash_password(password),
                     status="ACTIVE",
                 )
                 session.add(user)
@@ -102,8 +101,8 @@ async def main() -> None:
         await session.commit()
 
     print("Seeded demo users:")
-    for email, _name, role in SEED_USERS:
-        print(f"  {email}  |  password: {PASSWORD}  |  role: {role}")
+    for email, _name, role, password in SEED_USERS:
+        print(f"  {role:<18} | {email:<32} | password: {password}")
     print("\nAll of the above belong to org 'TransitOps'.")
 
 
