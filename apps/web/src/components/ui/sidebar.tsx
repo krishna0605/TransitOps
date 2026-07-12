@@ -249,6 +249,7 @@ const Sidebar = React.forwardRef<
               ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
               : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]",
           )}
+          style={{ width: state === "collapsed" ? 0 : SIDEBAR_WIDTH }}
         />
         <div
           className={cn(
@@ -262,6 +263,13 @@ const Sidebar = React.forwardRef<
               : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
             className,
           )}
+          style={{
+            width: SIDEBAR_WIDTH,
+            transform:
+              state === "collapsed" && side === "left"
+                ? "translateX(-100%)"
+                : undefined,
+          }}
           {...props}
         >
           <div
