@@ -4,16 +4,10 @@ import structlog
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+
+from app.contracts.errors import ErrorResponse
 
 logger = structlog.get_logger(__name__)
-
-
-class ErrorResponse(BaseModel):
-    code: str
-    message: str
-    details: dict[str, Any] = Field(default_factory=dict)
-    request_id: str
 
 
 class AppError(Exception):

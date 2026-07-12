@@ -28,4 +28,3 @@ Thumbs.db
 # Local runtime data
 .data/
 *.log
-packages/api-client/openapi.json

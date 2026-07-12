@@ -1,0 +1,91 @@
+from enum import StrEnum
+
+
+class UserStatus(StrEnum):
+    ACTIVE = "ACTIVE"
+    DISABLED = "DISABLED"
+
+
+class VehicleStatus(StrEnum):
+    AVAILABLE = "AVAILABLE"
+    ON_TRIP = "ON_TRIP"
+    IN_SHOP = "IN_SHOP"
+    RETIRED = "RETIRED"
+
+
+class DriverStatus(StrEnum):
+    AVAILABLE = "AVAILABLE"
+    ON_TRIP = "ON_TRIP"
+    OFF_DUTY = "OFF_DUTY"
+    SUSPENDED = "SUSPENDED"
+
+
+class TripStatus(StrEnum):
+    DRAFT = "DRAFT"
+    DISPATCHED = "DISPATCHED"
+    COMPLETED = "COMPLETED"
+    CANCELLED = "CANCELLED"
+
+
+class MaintenanceStatus(StrEnum):
+    ACTIVE = "ACTIVE"
+    COMPLETED = "COMPLETED"
+    CANCELLED = "CANCELLED"
+
+
+class MaintenancePriority(StrEnum):
+    LOW = "LOW"
+    NORMAL = "NORMAL"
+    HIGH = "HIGH"
+    CRITICAL = "CRITICAL"
+
+
+class ExpenseCategory(StrEnum):
+    FUEL = "FUEL"
+    MAINTENANCE = "MAINTENANCE"
+    TOLL = "TOLL"
+    PARKING = "PARKING"
+    INSURANCE = "INSURANCE"
+    PERMIT = "PERMIT"
+    OTHER = "OTHER"
+
+
+class ExpenseApprovalStatus(StrEnum):
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+
+
+class DocumentType(StrEnum):
+    REGISTRATION = "REGISTRATION"
+    INSURANCE = "INSURANCE"
+    PERMIT = "PERMIT"
+    INSPECTION = "INSPECTION"
+    DRIVER_LICENCE = "DRIVER_LICENCE"
+    RECEIPT = "RECEIPT"
+    INVOICE = "INVOICE"
+    OTHER = "OTHER"
+
+
+class NotificationType(StrEnum):
+    LICENCE_EXPIRING = "LICENCE_EXPIRING"
+    LICENCE_EXPIRED = "LICENCE_EXPIRED"
+    DOCUMENT_EXPIRING = "DOCUMENT_EXPIRING"
+    DOCUMENT_EXPIRED = "DOCUMENT_EXPIRED"
+    MAINTENANCE_DUE = "MAINTENANCE_DUE"
+    TRIP_DELAYED = "TRIP_DELAYED"
+    REPORT_READY = "REPORT_READY"
+    SYSTEM = "SYSTEM"
+
+
+class ReportExportStatus(StrEnum):
+    PENDING = "PENDING"
+    PROCESSING = "PROCESSING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
+    EXPIRED = "EXPIRED"
+
+
+class SortOrder(StrEnum):
+    ASC = "asc"
+    DESC = "desc"
