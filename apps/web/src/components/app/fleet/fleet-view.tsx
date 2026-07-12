@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Search } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -63,9 +64,12 @@ export function FleetView() {
   const vehiclesQuery = useVehicles();
   const createVehicle = useCreateVehicle();
   const items = vehiclesQuery.data;
+  const searchParams = useSearchParams();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState(
+    () => searchParams.get("status") ?? "All",
+  );
   const [open, setOpen] = useState(false);
 
   const form = useForm<VehicleValues>({
@@ -84,7 +88,11 @@ export function FleetView() {
       (items ?? []).filter((v) => {
         const matchesType = typeFilter === "All" || v.type === typeFilter;
         const matchesStatus =
-          statusFilter === "All" || v.status === statusFilter;
+          statusFilter === "All"
+            ? true
+            : statusFilter === "active"
+              ? v.status !== "Retired"
+              : v.status === statusFilter;
         const q = search.trim().toLowerCase();
         const matchesSearch =
           q === "" ||
@@ -291,6 +299,7 @@ export function FleetView() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="All">All</SelectItem>
+            <SelectItem value="active">Active (in service)</SelectItem>
             {STATUSES.map((s) => (
               <SelectItem key={s} value={s}>
                 {s}

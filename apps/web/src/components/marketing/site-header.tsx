@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { ThemeToggle } from "@/components/app/theme-toggle";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { marketingNav } from "@/config/nav";
@@ -36,6 +37,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Button
             asChild
             variant="ghost"
@@ -45,7 +47,7 @@ export function SiteHeader() {
             <Link href="/login">Sign in</Link>
           </Button>
           <Button asChild size="sm">
-            <Link href="/dashboard">Open app</Link>
+            <Link href="/dashboard">Demo App</Link>
           </Button>
         </div>
       </div>

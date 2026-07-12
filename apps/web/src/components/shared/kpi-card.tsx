@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -14,13 +16,22 @@ export function KpiCard({
   label,
   value,
   tone = "default",
+  href,
 }: {
   label: string;
   value: string;
   tone?: Tone;
+  href?: string;
 }) {
-  return (
-    <Card className={cn("border-l-4", ACCENT[tone])}>
+  const card = (
+    <Card
+      className={cn(
+        "border-l-4",
+        ACCENT[tone],
+        href &&
+          "hover:border-ring hover:shadow-md focus-visible:border-ring focus-visible:ring-ring/50 h-full cursor-pointer transition-shadow focus-visible:ring-[3px] focus-visible:outline-none",
+      )}
+    >
       <CardContent className="p-4">
         <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
           {label}
@@ -29,4 +40,14 @@ export function KpiCard({
       </CardContent>
     </Card>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className="block rounded-xl">
+        {card}
+      </Link>
+    );
+  }
+
+  return card;
 }

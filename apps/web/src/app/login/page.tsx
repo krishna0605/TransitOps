@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { LoginForm } from "@/components/auth/login-form";
 import { Logo } from "@/components/brand/logo";
@@ -28,7 +29,9 @@ export default function LoginPage() {
       {/* Brand panel */}
       <div className="relative hidden flex-col justify-between bg-slate-950 p-10 text-slate-100 lg:flex">
         <div className="text-slate-50">
-          <Logo />
+          <Link href="/" aria-label="TransitOps home">
+            <Logo />
+          </Link>
           <p className="mt-2 text-sm text-slate-400">
             Smart Transport Operations Platform
           </p>
@@ -55,7 +58,9 @@ export default function LoginPage() {
       <div className="flex items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-md">
           <div className="lg:hidden">
-            <Logo />
+            <Link href="/" aria-label="TransitOps home">
+              <Logo />
+            </Link>
           </div>
           <div className="mt-6 lg:mt-0">
             <h1 className="text-2xl font-semibold tracking-tight">

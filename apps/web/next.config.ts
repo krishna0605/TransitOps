@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import type { NextConfig } from "next";
 
 const securityHeaders = [
@@ -12,6 +13,14 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  devIndicators: false,
+  turbopack: {
+    // Pin the workspace root to the monorepo root so a stray lockfile elsewhere
+    // on the machine can't make Turbopack infer the wrong root (which makes every
+    // route 404). Must be the repo root, not apps/web, since `next` is hoisted to
+    // the workspace-root node_modules in this pnpm monorepo.
+    root: resolve(__dirname, "..", ".."),
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },

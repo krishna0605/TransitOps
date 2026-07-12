@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Search } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -79,8 +80,11 @@ export function DriversView() {
   const createDriver = useCreateDriver();
   const updateDriverStatus = useUpdateDriverStatus();
   const items = driversQuery.data;
+  const searchParams = useSearchParams();
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState(
+    () => searchParams.get("status") ?? "All",
+  );
   const [open, setOpen] = useState(false);
 
   const form = useForm<DriverValues>({
