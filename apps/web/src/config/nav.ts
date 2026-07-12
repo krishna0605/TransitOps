@@ -18,15 +18,47 @@ export type AppNavItem = {
   roles?: string[];
 };
 
+const ALL_ROLES = [
+  "Fleet Manager",
+  "Dispatcher",
+  "Safety Officer",
+  "Financial Analyst",
+];
+
 export const appNav: AppNavItem[] = [
-  { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { title: "Fleet", href: "/fleet", icon: Truck },
-  { title: "Drivers", href: "/drivers", icon: Users },
-  { title: "Trips", href: "/trips", icon: Route },
-  { title: "Maintenance", href: "/maintenance", icon: Wrench },
-  { title: "Fuel & Expenses", href: "/fuel-expenses", icon: Fuel },
-  { title: "Analytics", href: "/analytics", icon: BarChart3 },
-  { title: "Settings", href: "/settings", icon: Settings },
+  { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ALL_ROLES },
+  {
+    title: "Fleet",
+    href: "/fleet",
+    icon: Truck,
+    roles: ["Fleet Manager", "Dispatcher", "Financial Analyst"],
+  },
+  {
+    title: "Drivers",
+    href: "/drivers",
+    icon: Users,
+    roles: ["Fleet Manager", "Safety Officer"],
+  },
+  {
+    title: "Trips",
+    href: "/trips",
+    icon: Route,
+    roles: ["Dispatcher", "Safety Officer"],
+  },
+  { title: "Maintenance", href: "/maintenance", icon: Wrench, roles: ["Fleet Manager"] },
+  {
+    title: "Fuel & Expenses",
+    href: "/fuel-expenses",
+    icon: Fuel,
+    roles: ["Financial Analyst"],
+  },
+  {
+    title: "Analytics",
+    href: "/analytics",
+    icon: BarChart3,
+    roles: ["Fleet Manager", "Financial Analyst"],
+  },
+  { title: "Settings", href: "/settings", icon: Settings, roles: ALL_ROLES },
 ];
 
 export const marketingNav = [

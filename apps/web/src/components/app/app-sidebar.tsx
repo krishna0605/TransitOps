@@ -16,15 +16,24 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { appNav } from "@/config/nav";
+import { useAuth } from "@/lib/auth/auth-context";
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { user } = useAuth();
+
+  // RBAC: show items with no role restriction, or those that include the
+  // current role. Until the session hydrates (user null), show unrestricted
+  // items only so we never flash screens a role shouldn't see.
+  const items = appNav.filter(
+    (item) => !item.roles || (user ? item.roles.includes(user.role) : false),
+  );
 
   return (
     <Sidebar collapsible="offcanvas">
       <SidebarHeader className="h-16 justify-center border-b px-4">
         <Link
-          href="/dashboard"
+          href="/"
           aria-label="TransitOps"
           className="flex items-center in-data-[collapsible=icon]:justify-center"
         >
@@ -35,7 +44,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {appNav.map((item) => {
+              {items.map((item) => {
                 const active =
                   pathname === item.href ||
                   pathname.startsWith(`${item.href}/`);

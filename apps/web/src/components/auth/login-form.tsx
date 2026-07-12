@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -19,48 +20,76 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-const ROLES = [
-  "Fleet Manager",
-  "Dispatcher",
-  "Safety Officer",
-  "Financial Analyst",
-] as const;
+import { publicEnv } from "@/config/env";
+import { useAuth } from "@/lib/auth/auth-context";
+import { isRole, landingForRole } from "@/lib/auth/session";
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email address."),
   password: z.string().min(1, "Password is required."),
-  role: z.enum(ROLES),
   remember: z.boolean().optional(),
 });
 
 type LoginValues = z.infer<typeof loginSchema>;
 
+// The typed client strips `/api/v1`; the login endpoint lives back under it.
+const API_BASE = publicEnv.NEXT_PUBLIC_API_BASE_URL.replace(/\/api\/v1\/?$/, "");
+const LOGIN_URL = `${API_BASE}/api/v1/auth/login`;
+
 export function LoginForm() {
   const router = useRouter();
+  const { login } = useAuth();
+  const [authError, setAuthError] = useState<string | null>(null);
+
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
-      role: "Dispatcher",
       remember: true,
     },
   });
 
-  function onSubmit(values: LoginValues) {
-    // Auth is not wired yet — take the user to the dashboard for the demo.
-    toast.success("Signed in", {
-      description: `Welcome back, ${values.role}.`,
-    });
-    router.push("/dashboard");
+  async function onSubmit(values: LoginValues) {
+    setAuthError(null);
+    try {
+      const res = await fetch(LOGIN_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: values.email, password: values.password }),
+      });
+
+      if (res.status === 401) {
+        setAuthError("Incorrect email or password.");
+        return;
+      }
+      if (res.status === 423) {
+        setAuthError("Account locked after 5 failed attempts. Try again later.");
+        return;
+      }
+      if (!res.ok) {
+        setAuthError("Something went wrong. Please try again.");
+        return;
+      }
+
+      const data = (await res.json()) as {
+        name: string;
+        email: string;
+        role: string;
+      };
+      if (!isRole(data.role)) {
+        setAuthError("Your account role is not recognized. Contact an admin.");
+        return;
+      }
+
+      login({ name: data.name, email: data.email, role: data.role });
+      toast.success("Signed in", {
+        description: `Welcome back, ${data.name}.`,
+      });
+      router.push(landingForRole(data.role));
+    } catch {
+      setAuthError("Unable to reach the server. Check your connection.");
+    }
   }
 
   return (
@@ -104,30 +133,14 @@ export function LoginForm() {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="role"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Role (RBAC)</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a role" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {ROLES.map((role) => (
-                    <SelectItem key={role} value={role}>
-                      {role}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {authError ? (
+          <p
+            role="alert"
+            className="border-destructive/40 bg-destructive/10 text-destructive rounded-md border px-3 py-2 text-sm"
+          >
+            {authError}
+          </p>
+        ) : null}
 
         <div className="flex items-center justify-between">
           <FormField
@@ -156,8 +169,12 @@ export function LoginForm() {
           </Link>
         </div>
 
-        <Button type="submit" className="w-full">
-          Sign in
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting ? "Signing in…" : "Sign in"}
         </Button>
       </form>
     </Form>

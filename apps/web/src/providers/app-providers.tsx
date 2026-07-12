@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
 import { useState } from "react";
 
+import { AuthProvider } from "@/lib/auth/auth-context";
 import { createAppStore } from "@/store/store";
 
 export function AppProviders({
@@ -24,7 +25,9 @@ export function AppProviders({
 
   return (
     <Provider store={store}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>{children}</AuthProvider>
+      </QueryClientProvider>
     </Provider>
   );
 }
