@@ -27,6 +27,6 @@
     "infra:down": "docker compose down"
   },
   "devDependencies": {
-    "concurrently": "latest"
+    "concurrently": "^10.0.3"
   }
 }
