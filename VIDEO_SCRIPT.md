@@ -7,14 +7,14 @@ This script is written as paired **ON SCREEN** (what to click/show) and **SAY** 
 record it in one pass. Four login roles each see and can act on a different slice of the app, so the tour is
 organized role by role.
 
-All demo accounts use the password **`transitops`**.
+Each role has its own login (all in the **TransitOps** org):
 
-| Role | Email | Can do |
-| --- | --- | --- |
-| Fleet Manager | `manager@transitops.dev` | Full access to everything |
-| Dispatcher | `dispatcher@transitops.dev` | View vehicles/drivers; full trip lifecycle (create, dispatch, complete, cancel) |
-| Safety Officer | `safety@transitops.dev` | Driver create / update / suspend / restore; documents |
-| Financial Analyst | `finance@transitops.dev` | Fuel + expenses (incl. approve); reports view / export |
+| Role | Email | Password | Can do |
+| --- | --- | --- | --- |
+| Fleet Manager | `fleet.manager@transitops.app` | `Fleet@2026` | Full access to everything |
+| Dispatcher | `dispatcher@transitops.app` | `Dispatch@2026` | View vehicles/drivers; full trip lifecycle (create, dispatch, complete, cancel) |
+| Safety Officer | `safety.officer@transitops.app` | `Safety@2026` | Driver create / update / suspend / restore; documents |
+| Financial Analyst | `finance.analyst@transitops.app` | `Finance@2026` | Fuel + expenses (incl. approve); reports view / export |
 
 ---
 
@@ -45,7 +45,7 @@ Do all of this **before** you hit record so the take is clean.
 
 ## 2. Fleet Manager — the full tour
 
-**Log in:** `manager@transitops.dev` / `transitops`
+**Log in:** `fleet.manager@transitops.app` / `Fleet@2026`
 
 The Fleet Manager has full access, so use this section to show the complete app: Dashboard, Fleet, Drivers,
 Trips (the new list-first flow, end to end), and Maintenance.
@@ -93,7 +93,7 @@ Trips (the new list-first flow, end to end), and Maintenance.
 
 ## 3. Dispatcher
 
-**Log out, then log in:** `dispatcher@transitops.dev` / `transitops`
+**Log out, then log in:** `dispatcher@transitops.app` / `Dispatch@2026`
 
 | Beat | Detail |
 | --- | --- |
@@ -106,7 +106,7 @@ Trips (the new list-first flow, end to end), and Maintenance.
 
 ## 4. Safety Officer
 
-**Log out, then log in:** `safety@transitops.dev` / `transitops`
+**Log out, then log in:** `safety.officer@transitops.app` / `Safety@2026`
 
 | Beat | Detail |
 | --- | --- |
@@ -119,7 +119,7 @@ Trips (the new list-first flow, end to end), and Maintenance.
 
 ## 5. Financial Analyst
 
-**Log out, then log in:** `finance@transitops.dev` / `transitops`
+**Log out, then log in:** `finance.analyst@transitops.app` / `Finance@2026`
 
 | Beat | Detail |
 | --- | --- |
