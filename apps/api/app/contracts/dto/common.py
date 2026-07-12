@@ -15,6 +15,7 @@ def _to_utc(value: datetime) -> datetime:
 AwareDateTime = Annotated[datetime, AfterValidator(_to_utc)]
 Money = Annotated[Decimal, Field(max_digits=14, decimal_places=2, ge=0)]
 PositiveMoney = Annotated[Decimal, Field(max_digits=14, decimal_places=2, gt=0)]
+SignedMoney = Annotated[Decimal, Field(max_digits=14, decimal_places=2)]
 Measurement = Annotated[Decimal, Field(max_digits=14, decimal_places=3, ge=0)]
 PositiveMeasurement = Annotated[Decimal, Field(max_digits=14, decimal_places=3, gt=0)]
 
@@ -34,6 +35,17 @@ class VersionedModel(IdentifiedModel):
 class AuditFields(ContractModel):
     created_at: AwareDateTime
     updated_at: AwareDateTime
+
+
+class EntityRead(VersionedModel):
+    created_at: AwareDateTime
+    updated_at: AwareDateTime
+    archived_at: AwareDateTime | None = None
+
+
+class CurrencyAmount(ContractModel):
+    amount: Money
+    currency: str = Field(min_length=3, max_length=3, pattern=r"^[A-Z]{3}$")
 
 
 class Page[T](ContractModel):

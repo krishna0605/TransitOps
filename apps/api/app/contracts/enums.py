@@ -33,6 +33,13 @@ class MaintenanceStatus(StrEnum):
     CANCELLED = "CANCELLED"
 
 
+class MaintenancePriority(StrEnum):
+    LOW = "LOW"
+    NORMAL = "NORMAL"
+    HIGH = "HIGH"
+    CRITICAL = "CRITICAL"
+
+
 class ExpenseCategory(StrEnum):
     FUEL = "FUEL"
     MAINTENANCE = "MAINTENANCE"
