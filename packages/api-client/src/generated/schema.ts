@@ -4,6 +4,103 @@
  */
 
 export interface paths {
+    "/api/v1/drivers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Drivers
+         * @description List drivers. ``dispatchable=true`` returns only eligible drivers
+         *     (Available with a licence that has not expired).
+         */
+        get: operations["list_drivers_api_v1_drivers_get"];
+        put?: never;
+        /**
+         * Create Driver
+         * @description Create a driver profile. ``license_no`` must be unique.
+         */
+        post: operations["create_driver_api_v1_drivers_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/drivers/{driver_id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Driver Status
+         * @description Manually change a driver's duty status (Screen 3 inline control).
+         *
+         *     'On Trip' is managed by the dispatcher and cannot be set by hand here.
+         */
+        patch: operations["update_driver_status_api_v1_drivers__driver_id__status_patch"];
+        trace?: never;
+    };
+    "/api/v1/expenses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Expenses
+         * @description List expenses newest first, optionally scoped to a vehicle. Includes both
+         *     manual (Toll/Other) and auto-posted Maintenance rows.
+         */
+        get: operations["list_expenses_api_v1_expenses_get"];
+        put?: never;
+        /**
+         * Create Expense
+         * @description Record a manual Toll or Other expense. Maintenance expenses are posted
+         *     automatically from the maintenance screen, so they cannot be created here.
+         */
+        post: operations["create_expense_api_v1_expenses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/fuel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Fuel
+         * @description List fuel logs newest first, optionally scoped to a vehicle.
+         */
+        get: operations["list_fuel_api_v1_fuel_get"];
+        put?: never;
+        /**
+         * Create Fuel
+         * @description Log fuel for a vehicle, optionally attributed to one of its trips.
+         */
+        post: operations["create_fuel_api_v1_fuel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -38,10 +135,226 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/maintenance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Maintenance
+         * @description List maintenance records newest first, optionally scoped to a vehicle.
+         */
+        get: operations["list_maintenance_api_v1_maintenance_get"];
+        put?: never;
+        /**
+         * Create Maintenance
+         * @description Log a maintenance record and apply its side effects.
+         *
+         *     Active -> vehicle set to In Shop. trip_id set -> auto-post a Maintenance
+         *     expense linked back to this record (only when the trip belongs to the
+         *     vehicle).
+         */
+        post: operations["create_maintenance_api_v1_maintenance_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/{maintenance_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Close Maintenance
+         * @description Complete a maintenance record. The vehicle returns to Available unless it
+         *     was Retired (rule 10).
+         */
+        post: operations["close_maintenance_api_v1_maintenance__maintenance_id__close_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Trips
+         * @description List trips newest first. ``vehicle_id`` scopes results to one vehicle,
+         *     which powers the optional trip pickers on the fuel and maintenance screens.
+         */
+        get: operations["list_trips_api_v1_trips_get"];
+        put?: never;
+        /**
+         * Create Trip
+         * @description Create a Draft trip. Dispatch happens as a separate, validated step.
+         */
+        post: operations["create_trip_api_v1_trips_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel Trip
+         * @description Cancel a Draft or Dispatched trip. A dispatched trip releases its
+         *     vehicle and driver back to Available.
+         */
+        post: operations["cancel_trip_api_v1_trips__trip_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Complete Trip
+         * @description Dispatched -> Completed. Writes final_odometer, rolls the vehicle
+         *     odometer forward, and returns vehicle and driver to Available.
+         */
+        post: operations["complete_trip_api_v1_trips__trip_id__complete_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/dispatch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Dispatch Trip
+         * @description Draft -> Dispatched. Enforces capacity, vehicle/driver availability, and
+         *     the no-double-booking rule, then flags both resources On Trip.
+         */
+        post: operations["dispatch_trip_api_v1_trips__trip_id__dispatch_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vehicles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Vehicles
+         * @description List vehicles, newest first. ``dispatchable=true`` returns only the pool
+         *     eligible for trip dispatch (Available; never Retired or In Shop).
+         */
+        get: operations["list_vehicles_api_v1_vehicles_get"];
+        put?: never;
+        /**
+         * Create Vehicle
+         * @description Register a new vehicle. ``reg_no`` must be unique.
+         */
+        post: operations["create_vehicle_api_v1_vehicles_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** DriverCreate */
+        DriverCreate: {
+            /** Contact */
+            contact: string;
+            /**
+             * License Category
+             * @enum {string}
+             */
+            license_category: "LMV" | "HMV";
+            /**
+             * License Expiry
+             * Format: date
+             */
+            license_expiry: string;
+            /** License No */
+            license_no: string;
+            /** Name */
+            name: string;
+            /**
+             * Safety Score
+             * @default 100
+             */
+            safety_score: number;
+        };
+        /** DriverRead */
+        DriverRead: {
+            /** Contact */
+            contact: string;
+            /** Driver Id */
+            driver_id: number;
+            /** License Category */
+            license_category: string;
+            /**
+             * License Expiry
+             * Format: date
+             */
+            license_expiry: string;
+            /** License No */
+            license_no: string;
+            /** Name */
+            name: string;
+            /** Safety Score */
+            safety_score: number;
+            /** Status */
+            status: string;
+        };
+        /** DriverStatusUpdate */
+        DriverStatusUpdate: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "Available" | "On Trip" | "Off Duty" | "Suspended";
+        };
         /** ErrorResponse */
         ErrorResponse: {
             /** Code */
@@ -54,6 +367,82 @@ export interface components {
             message: string;
             /** Request Id */
             request_id: string;
+        };
+        /** ExpenseCreate */
+        ExpenseCreate: {
+            /** Amount */
+            amount: number;
+            /**
+             * Category
+             * @default Toll
+             * @enum {string}
+             */
+            category: "Toll" | "Other";
+            /** Trip Id */
+            trip_id?: number | null;
+            /** Vehicle Id */
+            vehicle_id: number;
+        };
+        /** ExpenseRead */
+        ExpenseRead: {
+            /** Amount */
+            amount: number;
+            /** Category */
+            category: string;
+            /** Expense Id */
+            expense_id: number;
+            /** Maintenance Id */
+            maintenance_id: number | null;
+            /** Status */
+            status: string;
+            /** Trip Id */
+            trip_id: number | null;
+            /** Trip Label */
+            trip_label: string | null;
+            /** Vehicle Id */
+            vehicle_id: number;
+            /** Vehicle Reg No */
+            vehicle_reg_no: string;
+        };
+        /** FuelCreate */
+        FuelCreate: {
+            /** Cost */
+            cost: number;
+            /** Fuel Date */
+            fuel_date?: string | null;
+            /** Liters */
+            liters: number;
+            /** Trip Id */
+            trip_id?: number | null;
+            /** Vehicle Id */
+            vehicle_id: number;
+        };
+        /** FuelRead */
+        FuelRead: {
+            /** Cost */
+            cost: number;
+            /**
+             * Fuel Date
+             * Format: date
+             */
+            fuel_date: string;
+            /** Fuel Id */
+            fuel_id: number;
+            /** Liters */
+            liters: number;
+            /** Trip Id */
+            trip_id: number | null;
+            /** Trip Label */
+            trip_label: string | null;
+            /** Vehicle Id */
+            vehicle_id: number;
+            /** Vehicle Reg No */
+            vehicle_reg_no: string;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
         };
         /** HealthResponse */
         HealthResponse: {
@@ -70,6 +459,49 @@ export interface components {
             /** Version */
             version: string;
         };
+        /** MaintenanceCreate */
+        MaintenanceCreate: {
+            /** Cost */
+            cost: number;
+            /** Service Date */
+            service_date?: string | null;
+            /** Service Type */
+            service_type: string;
+            /**
+             * Status
+             * @default Active
+             * @enum {string}
+             */
+            status: "Active" | "Completed";
+            /** Trip Id */
+            trip_id?: number | null;
+            /** Vehicle Id */
+            vehicle_id: number;
+        };
+        /** MaintenanceRead */
+        MaintenanceRead: {
+            /** Cost */
+            cost: number;
+            /** Linked Expense Id */
+            linked_expense_id: number | null;
+            /** Maintenance Id */
+            maintenance_id: number;
+            /**
+             * Service Date
+             * Format: date
+             */
+            service_date: string;
+            /** Service Type */
+            service_type: string;
+            /** Status */
+            status: string;
+            /** Trip Id */
+            trip_id: number | null;
+            /** Vehicle Id */
+            vehicle_id: number;
+            /** Vehicle Reg No */
+            vehicle_reg_no: string;
+        };
         /** ReadinessResponse */
         ReadinessResponse: {
             /**
@@ -84,6 +516,110 @@ export interface components {
              */
             status: "ready";
         };
+        /** TripComplete */
+        TripComplete: {
+            /** Final Odometer */
+            final_odometer?: number | null;
+        };
+        /** TripCreate */
+        TripCreate: {
+            /** Cargo Weight Kg */
+            cargo_weight_kg: number;
+            /** Destination */
+            destination: string;
+            /** Driver Id */
+            driver_id: number;
+            /** Planned Distance Km */
+            planned_distance_km: number;
+            /** Source */
+            source: string;
+            /** Vehicle Id */
+            vehicle_id: number;
+        };
+        /** TripRead */
+        TripRead: {
+            /** Cargo Weight Kg */
+            cargo_weight_kg: number;
+            /** Completed At */
+            completed_at: string | null;
+            /** Destination */
+            destination: string;
+            /** Dispatched At */
+            dispatched_at: string | null;
+            /** Driver Id */
+            driver_id: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Final Odometer */
+            final_odometer: number | null;
+            /** Planned Distance Km */
+            planned_distance_km: number;
+            /** Source */
+            source: string;
+            /** Status */
+            status: string;
+            /** Trip Id */
+            trip_id: number;
+            /** Vehicle Id */
+            vehicle_id: number;
+            /** Vehicle Name Model */
+            vehicle_name_model: string;
+            /** Vehicle Reg No */
+            vehicle_reg_no: string;
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Context */
+            ctx?: Record<string, never>;
+            /** Input */
+            input?: unknown;
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+        };
+        /** VehicleCreate */
+        VehicleCreate: {
+            /** Acquisition Cost */
+            acquisition_cost: number;
+            /** Max Capacity Kg */
+            max_capacity_kg: number;
+            /** Name Model */
+            name_model: string;
+            /**
+             * Odometer
+             * @default 0
+             */
+            odometer: number;
+            /** Reg No */
+            reg_no: string;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "Van" | "Truck" | "Mini";
+        };
+        /** VehicleRead */
+        VehicleRead: {
+            /** Acquisition Cost */
+            acquisition_cost: number;
+            /** Max Capacity Kg */
+            max_capacity_kg: number;
+            /** Name Model */
+            name_model: string;
+            /** Odometer */
+            odometer: number;
+            /** Reg No */
+            reg_no: string;
+            /** Status */
+            status: string;
+            /** Type */
+            type: string;
+            /** Vehicle Id */
+            vehicle_id: number;
+        };
     };
     responses: never;
     parameters: never;
@@ -93,6 +629,233 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    list_drivers_api_v1_drivers_get: {
+        parameters: {
+            query?: {
+                dispatchable?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DriverRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_driver_api_v1_drivers_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DriverCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DriverRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_driver_status_api_v1_drivers__driver_id__status_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                driver_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DriverStatusUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DriverRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_expenses_api_v1_expenses_get: {
+        parameters: {
+            query?: {
+                vehicle_id?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpenseRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_expense_api_v1_expenses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExpenseCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpenseRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_fuel_api_v1_fuel_get: {
+        parameters: {
+            query?: {
+                vehicle_id?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FuelRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_fuel_api_v1_fuel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FuelCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FuelRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     health_api_v1_health_get: {
         parameters: {
             query?: never;
@@ -138,6 +901,326 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_maintenance_api_v1_maintenance_get: {
+        parameters: {
+            query?: {
+                vehicle_id?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaintenanceRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_maintenance_api_v1_maintenance_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaintenanceRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    close_maintenance_api_v1_maintenance__maintenance_id__close_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                maintenance_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaintenanceRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_trips_api_v1_trips_get: {
+        parameters: {
+            query?: {
+                vehicle_id?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_trip_api_v1_trips_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TripCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_trip_api_v1_trips__trip_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    complete_trip_api_v1_trips__trip_id__complete_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TripComplete"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    dispatch_trip_api_v1_trips__trip_id__dispatch_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_vehicles_api_v1_vehicles_get: {
+        parameters: {
+            query?: {
+                dispatchable?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_vehicle_api_v1_vehicles_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VehicleCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
