@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 
@@ -28,23 +28,34 @@ export function AppShell({
   const reduceMotion = useReducedMotion();
   const router = useRouter();
   const pathname = usePathname();
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     dispatch(setSidebarOpen(readSidebarPreference()));
   }, [dispatch]);
 
+  // Establish the signed-in role before rendering the shell. No stored role
+  // means the user isn't signed in for this demo — send them to /login so the
+  // sidebar is never rendered with the permissive default role.
   useEffect(() => {
     const stored = window.localStorage.getItem(ROLE_STORAGE_KEY);
     if (isAppRole(stored)) {
       dispatch(setRole(stored));
+      setHydrated(true);
+    } else {
+      router.replace("/login");
     }
-  }, [dispatch]);
+  }, [dispatch, router]);
 
   useEffect(() => {
-    if (!canAccessPath(role, pathname)) {
+    if (hydrated && !canAccessPath(role, pathname)) {
       router.replace(navItemsForRole(role)[0]?.href ?? "/dashboard");
     }
-  }, [role, pathname, router]);
+  }, [hydrated, role, pathname, router]);
+
+  if (!hydrated) {
+    return null;
+  }
 
   return (
     <SidebarProvider
