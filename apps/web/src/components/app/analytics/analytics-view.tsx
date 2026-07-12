@@ -17,18 +17,14 @@ import { toast } from "sonner";
 import { KpiCard } from "@/components/shared/kpi-card";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  analyticsKpis,
-  costBreakdown,
-  costliestVehicles,
-  monthlyRevenue,
-} from "@/lib/mock-data";
+  useExpenses,
+  useFuel,
+  useMaintenance,
+  useTrips,
+  useVehicles,
+} from "@/lib/api/hooks";
 
 const CHART_COLORS = [
   "var(--chart-1)",
@@ -38,10 +34,10 @@ const CHART_COLORS = [
   "var(--chart-5)",
 ];
 
-function exportCsv() {
+function exportCsv(rows: { month: string; value: number }[]) {
   const header = "month,revenue\n";
-  const rows = monthlyRevenue.map((r) => `${r.month},${r.value}`).join("\n");
-  const blob = new Blob([header + rows], { type: "text/csv;charset=utf-8" });
+  const values = rows.map((row) => `${row.month},${row.value}`).join("\n");
+  const blob = new Blob([header + values], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -52,13 +48,62 @@ function exportCsv() {
 }
 
 export function AnalyticsView() {
+  const fuel = useFuel().data ?? [];
+  const expenses = useExpenses().data ?? [];
+  const maintenance = useMaintenance().data ?? [];
+  const trips = useTrips().data ?? [];
+  const vehicles = useVehicles().data ?? [];
+  const costBreakdown = [
+    {
+      category: "Fuel",
+      value: fuel.reduce((total, item) => total + item.cost, 0),
+    },
+    {
+      category: "Maintenance",
+      value: maintenance.reduce((total, item) => total + item.cost, 0),
+    },
+    {
+      category: "Other",
+      value: expenses.reduce((total, item) => total + item.amount, 0),
+    },
+  ];
+  const costliestVehicles = vehicles
+    .map((vehicle) => ({
+      vehicle: vehicle.name_model,
+      cost: fuel
+        .filter((item) => item.vehicle_id === vehicle.vehicle_id)
+        .reduce((total, item) => total + item.cost, 0),
+    }))
+    .sort((left, right) => right.cost - left.cost)
+    .slice(0, 5);
+  const monthlyRevenue = [
+    {
+      month: "Current",
+      value: trips.reduce((total, item) => total + item.planned_distance_km, 0),
+    },
+  ];
+  const analyticsKpis = [
+    { label: "Fuel logs", value: String(fuel.length) },
+    {
+      label: "Fleet utilization",
+      value: `${vehicles.length ? Math.round((vehicles.filter((item) => item.status === "On Trip").length / vehicles.length) * 100) : 0}%`,
+    },
+    {
+      label: "Operational cost",
+      value: `₹${costBreakdown.reduce((total, item) => total + item.value, 0).toLocaleString()}`,
+    },
+    {
+      label: "Completed trips",
+      value: String(trips.filter((item) => item.status === "Completed").length),
+    },
+  ];
   return (
     <>
       <PageHeader
         title="Analytics"
         description="Fuel efficiency, utilization, operational cost, and ROI."
         actions={
-          <Button variant="outline" onClick={exportCsv}>
+          <Button variant="outline" onClick={() => exportCsv(monthlyRevenue)}>
             <Download className="size-4" />
             Export CSV
           </Button>
@@ -194,8 +239,7 @@ export function AnalyticsView() {
                       <span
                         className="size-3 rounded-sm"
                         style={{
-                          background:
-                            CHART_COLORS[index % CHART_COLORS.length],
+                          background: CHART_COLORS[index % CHART_COLORS.length],
                         }}
                       />
                       {entry.category}

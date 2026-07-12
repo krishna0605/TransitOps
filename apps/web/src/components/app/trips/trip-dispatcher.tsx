@@ -7,12 +7,7 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -24,19 +19,14 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import {
-  drivers,
-  type Trip,
-  type TripStatus,
-  trips as seedTrips,
-  vehicles,
-} from "@/lib/mock-data";
+  useCreateTrip,
+  useDrivers,
+  useTripAction,
+  useTrips,
+  useVehicles,
+} from "@/lib/api/hooks";
 
-const LIFECYCLE: TripStatus[] = [
-  "Draft",
-  "Dispatched",
-  "Completed",
-  "Cancelled",
-];
+const LIFECYCLE = ["Draft", "Dispatched", "Completed", "Cancelled"];
 
 const EMPTY = {
   source: "",
@@ -48,18 +38,27 @@ const EMPTY = {
 };
 
 export function TripDispatcher() {
-  const [board, setBoard] = useState<Trip[]>(seedTrips);
+  const tripsQuery = useTrips();
+  const vehiclesQuery = useVehicles();
+  const driversQuery = useDrivers(true);
+  const createTrip = useCreateTrip();
+  const tripAction = useTripAction();
+  const board = tripsQuery.data ?? [];
+  const vehicles = vehiclesQuery.data ?? [];
+  const drivers = driversQuery.data ?? [];
   const [form, setForm] = useState(EMPTY);
 
   // Business rules: only Available vehicles and eligible drivers can dispatch.
-  const availableVehicles = vehicles.filter((v) => v.status === "Available");
-  const availableDrivers = drivers.filter(
-    (d) => d.status === "Available" && !d.expired,
+  const availableVehicles = vehicles.filter(
+    (vehicle) => vehicle.status === "Available",
   );
+  const availableDrivers = drivers;
 
-  const selectedVehicle = vehicles.find((v) => v.nameModel === form.vehicle);
+  const selectedVehicle = vehicles.find(
+    (vehicle) => vehicle.vehicle_id === Number(form.vehicle),
+  );
   const cargo = Number(form.cargo) || 0;
-  const capacity = selectedVehicle?.capacityKg ?? 0;
+  const capacity = selectedVehicle?.max_capacity_kg ?? 0;
   const over = selectedVehicle ? cargo - capacity : 0;
   const blocked = over > 0;
   const complete =
@@ -75,7 +74,7 @@ export function TripDispatcher() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  function dispatch() {
+  async function dispatch() {
     if (!complete) {
       toast.error("Complete all fields before dispatching.");
       return;
@@ -84,33 +83,39 @@ export function TripDispatcher() {
       toast.error(`Capacity exceeded by ${over} kg.`);
       return;
     }
-    const nextNumber = board.length + 1;
-    setBoard((prev) => [
-      {
-        id: Math.max(0, ...prev.map((t) => t.id)) + 1,
-        code: `TR${String(nextNumber).padStart(3, "0")}`,
+    try {
+      const trip = await createTrip.mutateAsync({
         source: form.source,
         destination: form.destination,
-        vehicle: form.vehicle,
-        driver: form.driver,
-        status: "Dispatched",
-        eta: "Just now",
-        cargoKg: cargo,
-        distanceKm: Number(form.distance) || 0,
-      },
-      ...prev,
-    ]);
-    toast.success("Trip dispatched", {
-      description: `${form.vehicle} · ${form.driver}`,
-    });
-    setForm(EMPTY);
+        vehicle_id: Number(form.vehicle),
+        driver_id: Number(form.driver),
+        cargo_weight_kg: cargo,
+        planned_distance_km: Number(form.distance),
+      });
+      await tripAction.mutateAsync({
+        tripId: trip.trip_id,
+        action: "dispatch",
+      });
+      toast.success("Trip dispatched", {
+        description: `${trip.vehicle_name_model} · ${trip.driver_name}`,
+      });
+      setForm(EMPTY);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not dispatch trip.",
+      );
+    }
   }
 
-  function advance(id: number, status: TripStatus) {
-    setBoard((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, status, eta: "—" } : t)),
-    );
-    toast.success(`Trip ${status.toLowerCase()}`);
+  async function advance(id: number, action: "complete" | "cancel") {
+    try {
+      await tripAction.mutateAsync({ tripId: id, action });
+      toast.success(`Trip ${action}d`);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not update trip.",
+      );
+    }
   }
 
   return (
@@ -181,8 +186,11 @@ export function TripDispatcher() {
                   </SelectTrigger>
                   <SelectContent>
                     {availableVehicles.map((v) => (
-                      <SelectItem key={v.id} value={v.nameModel}>
-                        {v.nameModel} · {v.capacityKg} kg
+                      <SelectItem
+                        key={v.vehicle_id}
+                        value={String(v.vehicle_id)}
+                      >
+                        {v.name_model} · {v.max_capacity_kg} kg
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -199,8 +207,8 @@ export function TripDispatcher() {
                   </SelectTrigger>
                   <SelectContent>
                     {availableDrivers.map((d) => (
-                      <SelectItem key={d.id} value={d.name}>
-                        {d.name} · {d.category}
+                      <SelectItem key={d.driver_id} value={String(d.driver_id)}>
+                        {d.name} · {d.license_category}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -232,8 +240,8 @@ export function TripDispatcher() {
                 className={cn(
                   "flex items-start gap-2 rounded-lg border p-3 text-sm",
                   blocked
-                    ? "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400"
-                    : "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+                    ? "border-red-500/30 bg-red-500/10 text-red-700"
+                    : "border-emerald-500/30 bg-emerald-500/10 text-emerald-700",
                 )}
               >
                 {blocked ? (
@@ -273,19 +281,19 @@ export function TripDispatcher() {
           <CardContent className="space-y-3">
             {board.map((trip) => (
               <div
-                key={trip.id}
+                key={trip.trip_id}
                 className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">{trip.code}</span>
+                    <span className="font-medium">Trip #{trip.trip_id}</span>
                     <StatusBadge status={trip.status} />
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {trip.source} → {trip.destination}
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    {trip.vehicle} · {trip.driver} · {trip.eta}
+                  <p className="text-muted-foreground text-xs">
+                    {trip.vehicle_name_model} · {trip.driver_name}
                   </p>
                 </div>
                 {trip.status === "Dispatched" ? (
@@ -293,14 +301,14 @@ export function TripDispatcher() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => advance(trip.id, "Completed")}
+                      onClick={() => advance(trip.trip_id, "complete")}
                     >
                       Complete
                     </Button>
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => advance(trip.id, "Cancelled")}
+                      onClick={() => advance(trip.trip_id, "cancel")}
                     >
                       Cancel
                     </Button>
@@ -312,7 +320,7 @@ export function TripDispatcher() {
         </Card>
       </div>
 
-      <p className="text-sm text-muted-foreground">
+      <p className="text-muted-foreground text-sm">
         On completion: odometer → fuel log → expenses; vehicle and driver return
         to Available.
       </p>

@@ -1,7 +1,10 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Provider } from "react-redux";
 import { useState } from "react";
+
+import { createAppStore } from "@/store/store";
 
 export function AppProviders({
   children,
@@ -17,8 +20,11 @@ export function AppProviders({
         },
       }),
   );
+  const [store] = useState(createAppStore);
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Provider>
   );
 }

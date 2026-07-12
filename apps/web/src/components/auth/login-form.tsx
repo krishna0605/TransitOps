@@ -57,7 +57,9 @@ export function LoginForm() {
 
   function onSubmit(values: LoginValues) {
     // Auth is not wired yet — take the user to the dashboard for the demo.
-    toast.success("Signed in", { description: `Welcome back, ${values.role}.` });
+    toast.success("Signed in", {
+      description: `Welcome back, ${values.role}.`,
+    });
     router.push("/dashboard");
   }
 
@@ -148,7 +150,7 @@ export function LoginForm() {
           />
           <Link
             href="#"
-            className="text-sm font-medium text-brand hover:underline"
+            className="text-brand text-sm font-medium hover:underline"
           >
             Forgot password?
           </Link>

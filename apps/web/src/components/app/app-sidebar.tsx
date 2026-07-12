@@ -26,7 +26,7 @@ export function AppSidebar() {
         <Link
           href="/dashboard"
           aria-label="TransitOps"
-          className="in-data-[collapsible=icon]:justify-center flex items-center"
+          className="flex items-center in-data-[collapsible=icon]:justify-center"
         >
           <Logo />
         </Link>

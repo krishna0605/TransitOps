@@ -44,7 +44,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { type Vehicle, vehicles as seedVehicles } from "@/lib/mock-data";
+import { useCreateVehicle, useVehicles } from "@/lib/api/hooks";
 
 const TYPES = ["Van", "Truck", "Mini"] as const;
 const STATUSES = ["Available", "On Trip", "In Shop", "Retired"] as const;
@@ -60,7 +60,9 @@ const vehicleSchema = z.object({
 type VehicleValues = z.infer<typeof vehicleSchema>;
 
 export function FleetView() {
-  const [items, setItems] = useState<Vehicle[]>(seedVehicles);
+  const vehiclesQuery = useVehicles();
+  const createVehicle = useCreateVehicle();
+  const items = vehiclesQuery.data;
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -79,46 +81,41 @@ export function FleetView() {
 
   const filtered = useMemo(
     () =>
-      items.filter((v) => {
+      (items ?? []).filter((v) => {
         const matchesType = typeFilter === "All" || v.type === typeFilter;
         const matchesStatus =
           statusFilter === "All" || v.status === statusFilter;
         const q = search.trim().toLowerCase();
         const matchesSearch =
           q === "" ||
-          v.regNo.toLowerCase().includes(q) ||
-          v.nameModel.toLowerCase().includes(q);
+          v.reg_no.toLowerCase().includes(q) ||
+          v.name_model.toLowerCase().includes(q);
         return matchesType && matchesStatus && matchesSearch;
       }),
     [items, search, typeFilter, statusFilter],
   );
 
-  function onSubmit(values: VehicleValues) {
-    const parsed = values;
-    if (
-      items.some(
-        (v) => v.regNo.toLowerCase() === parsed.regNo.toLowerCase(),
-      )
-    ) {
-      form.setError("regNo", { message: "Registration number must be unique." });
-      return;
-    }
-    setItems((prev) => [
-      {
-        id: Math.max(0, ...prev.map((v) => v.id)) + 1,
-        regNo: parsed.regNo.toUpperCase(),
-        nameModel: parsed.nameModel,
-        type: parsed.type,
-        capacityKg: parsed.capacityKg,
+  async function onSubmit(values: VehicleValues) {
+    try {
+      await createVehicle.mutateAsync({
+        reg_no: values.regNo,
+        name_model: values.nameModel,
+        type: values.type,
+        max_capacity_kg: values.capacityKg,
         odometer: 0,
-        acquisitionCost: parsed.acquisitionCost,
-        status: "Available",
-      },
-      ...prev,
-    ]);
-    toast.success("Vehicle added", { description: parsed.regNo.toUpperCase() });
-    form.reset();
-    setOpen(false);
+        acquisition_cost: values.acquisitionCost,
+      });
+      toast.success("Vehicle added", {
+        description: values.regNo.toUpperCase(),
+      });
+      form.reset();
+      setOpen(false);
+    } catch (error) {
+      form.setError("regNo", {
+        message:
+          error instanceof Error ? error.message : "Could not add vehicle.",
+      });
+    }
   }
 
   return (
@@ -213,7 +210,9 @@ export function FleetView() {
                               name={field.name}
                               ref={field.ref}
                               onBlur={field.onBlur}
-                              value={Number.isNaN(field.value) ? "" : field.value}
+                              value={
+                                Number.isNaN(field.value) ? "" : field.value
+                              }
                               onChange={(e) =>
                                 field.onChange(e.target.valueAsNumber)
                               }
@@ -235,7 +234,9 @@ export function FleetView() {
                               name={field.name}
                               ref={field.ref}
                               onBlur={field.onBlur}
-                              value={Number.isNaN(field.value) ? "" : field.value}
+                              value={
+                                Number.isNaN(field.value) ? "" : field.value
+                              }
                               onChange={(e) =>
                                 field.onChange(e.target.valueAsNumber)
                               }
@@ -261,7 +262,7 @@ export function FleetView() {
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative w-full max-w-xs">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -297,8 +298,8 @@ export function FleetView() {
             ))}
           </SelectContent>
         </Select>
-        <span className="ml-auto text-sm text-muted-foreground">
-          {filtered.length} of {items.length}
+        <span className="text-muted-foreground ml-auto text-sm">
+          {filtered.length} of {items?.length ?? 0}
         </span>
       </div>
 
@@ -318,18 +319,18 @@ export function FleetView() {
             </TableHeader>
             <TableBody>
               {filtered.map((v) => (
-                <TableRow key={v.id}>
-                  <TableCell className="font-medium">{v.regNo}</TableCell>
-                  <TableCell>{v.nameModel}</TableCell>
+                <TableRow key={v.vehicle_id}>
+                  <TableCell className="font-medium">{v.reg_no}</TableCell>
+                  <TableCell>{v.name_model}</TableCell>
                   <TableCell>{v.type}</TableCell>
                   <TableCell className="text-right tabular-nums">
-                    {v.capacityKg.toLocaleString()} kg
+                    {v.max_capacity_kg.toLocaleString()} kg
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
                     {v.odometer.toLocaleString()}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
-                    ₹{v.acquisitionCost.toLocaleString()}
+                    ₹{v.acquisition_cost.toLocaleString()}
                   </TableCell>
                   <TableCell>
                     <StatusBadge status={v.status} />
@@ -340,7 +341,7 @@ export function FleetView() {
                 <TableRow>
                   <TableCell
                     colSpan={7}
-                    className="py-10 text-center text-muted-foreground"
+                    className="text-muted-foreground py-10 text-center"
                   >
                     No vehicles match your filters.
                   </TableCell>
@@ -351,7 +352,7 @@ export function FleetView() {
         </CardContent>
       </Card>
 
-      <p className="text-sm text-muted-foreground">
+      <p className="text-muted-foreground text-sm">
         Rule: registration number must be unique · Retired and In Shop vehicles
         are hidden from the trip dispatcher.
       </p>

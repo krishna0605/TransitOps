@@ -1,6 +1,125 @@
 {
   "components": {
     "schemas": {
+      "DriverCreate": {
+        "properties": {
+          "contact": {
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Contact",
+            "type": "string"
+          },
+          "license_category": {
+            "enum": [
+              "LMV",
+              "HMV"
+            ],
+            "title": "License Category",
+            "type": "string"
+          },
+          "license_expiry": {
+            "format": "date",
+            "title": "License Expiry",
+            "type": "string"
+          },
+          "license_no": {
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "License No",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "safety_score": {
+            "default": 100,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Safety Score",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "license_no",
+          "license_category",
+          "license_expiry",
+          "contact"
+        ],
+        "title": "DriverCreate",
+        "type": "object"
+      },
+      "DriverRead": {
+        "properties": {
+          "contact": {
+            "title": "Contact",
+            "type": "string"
+          },
+          "driver_id": {
+            "title": "Driver Id",
+            "type": "integer"
+          },
+          "license_category": {
+            "title": "License Category",
+            "type": "string"
+          },
+          "license_expiry": {
+            "format": "date",
+            "title": "License Expiry",
+            "type": "string"
+          },
+          "license_no": {
+            "title": "License No",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "safety_score": {
+            "title": "Safety Score",
+            "type": "number"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "driver_id",
+          "name",
+          "license_no",
+          "license_category",
+          "license_expiry",
+          "contact",
+          "safety_score",
+          "status"
+        ],
+        "title": "DriverRead",
+        "type": "object"
+      },
+      "DriverStatusUpdate": {
+        "properties": {
+          "status": {
+            "enum": [
+              "Available",
+              "On Trip",
+              "Off Duty",
+              "Suspended"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "DriverStatusUpdate",
+        "type": "object"
+      },
       "ErrorResponse": {
         "additionalProperties": false,
         "properties": {
@@ -28,6 +147,243 @@
           "request_id"
         ],
         "title": "ErrorResponse",
+        "type": "object"
+      },
+      "ExpenseCreate": {
+        "properties": {
+          "amount": {
+            "exclusiveMinimum": 0.0,
+            "title": "Amount",
+            "type": "number"
+          },
+          "category": {
+            "default": "Toll",
+            "enum": [
+              "Toll",
+              "Other"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "trip_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Id"
+          },
+          "vehicle_id": {
+            "title": "Vehicle Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "vehicle_id",
+          "amount"
+        ],
+        "title": "ExpenseCreate",
+        "type": "object"
+      },
+      "ExpenseRead": {
+        "properties": {
+          "amount": {
+            "title": "Amount",
+            "type": "number"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "expense_id": {
+            "title": "Expense Id",
+            "type": "integer"
+          },
+          "maintenance_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maintenance Id"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "trip_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Id"
+          },
+          "trip_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Label"
+          },
+          "vehicle_id": {
+            "title": "Vehicle Id",
+            "type": "integer"
+          },
+          "vehicle_reg_no": {
+            "title": "Vehicle Reg No",
+            "type": "string"
+          }
+        },
+        "required": [
+          "expense_id",
+          "vehicle_id",
+          "vehicle_reg_no",
+          "trip_id",
+          "trip_label",
+          "maintenance_id",
+          "category",
+          "amount",
+          "status"
+        ],
+        "title": "ExpenseRead",
+        "type": "object"
+      },
+      "FuelCreate": {
+        "properties": {
+          "cost": {
+            "minimum": 0.0,
+            "title": "Cost",
+            "type": "number"
+          },
+          "fuel_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fuel Date"
+          },
+          "liters": {
+            "exclusiveMinimum": 0.0,
+            "title": "Liters",
+            "type": "number"
+          },
+          "trip_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Id"
+          },
+          "vehicle_id": {
+            "title": "Vehicle Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "vehicle_id",
+          "liters",
+          "cost"
+        ],
+        "title": "FuelCreate",
+        "type": "object"
+      },
+      "FuelRead": {
+        "properties": {
+          "cost": {
+            "title": "Cost",
+            "type": "number"
+          },
+          "fuel_date": {
+            "format": "date",
+            "title": "Fuel Date",
+            "type": "string"
+          },
+          "fuel_id": {
+            "title": "Fuel Id",
+            "type": "integer"
+          },
+          "liters": {
+            "title": "Liters",
+            "type": "number"
+          },
+          "trip_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Id"
+          },
+          "trip_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Label"
+          },
+          "vehicle_id": {
+            "title": "Vehicle Id",
+            "type": "integer"
+          },
+          "vehicle_reg_no": {
+            "title": "Vehicle Reg No",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fuel_id",
+          "vehicle_id",
+          "vehicle_reg_no",
+          "trip_id",
+          "trip_label",
+          "fuel_date",
+          "liters",
+          "cost"
+        ],
+        "title": "FuelRead",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
         "type": "object"
       },
       "HealthResponse": {
@@ -59,6 +415,132 @@
         "title": "HealthResponse",
         "type": "object"
       },
+      "MaintenanceCreate": {
+        "properties": {
+          "cost": {
+            "minimum": 0.0,
+            "title": "Cost",
+            "type": "number"
+          },
+          "service_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Date"
+          },
+          "service_type": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Service Type",
+            "type": "string"
+          },
+          "status": {
+            "default": "Active",
+            "enum": [
+              "Active",
+              "Completed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "trip_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Id"
+          },
+          "vehicle_id": {
+            "title": "Vehicle Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "vehicle_id",
+          "service_type",
+          "cost"
+        ],
+        "title": "MaintenanceCreate",
+        "type": "object"
+      },
+      "MaintenanceRead": {
+        "properties": {
+          "cost": {
+            "title": "Cost",
+            "type": "number"
+          },
+          "linked_expense_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linked Expense Id"
+          },
+          "maintenance_id": {
+            "title": "Maintenance Id",
+            "type": "integer"
+          },
+          "service_date": {
+            "format": "date",
+            "title": "Service Date",
+            "type": "string"
+          },
+          "service_type": {
+            "title": "Service Type",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "trip_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Id"
+          },
+          "vehicle_id": {
+            "title": "Vehicle Id",
+            "type": "integer"
+          },
+          "vehicle_reg_no": {
+            "title": "Vehicle Reg No",
+            "type": "string"
+          }
+        },
+        "required": [
+          "maintenance_id",
+          "vehicle_id",
+          "vehicle_reg_no",
+          "trip_id",
+          "service_type",
+          "cost",
+          "service_date",
+          "status",
+          "linked_expense_id"
+        ],
+        "title": "MaintenanceRead",
+        "type": "object"
+      },
       "ReadinessResponse": {
         "properties": {
           "database": {
@@ -81,6 +563,307 @@
         ],
         "title": "ReadinessResponse",
         "type": "object"
+      },
+      "TripComplete": {
+        "properties": {
+          "final_odometer": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Final Odometer"
+          }
+        },
+        "title": "TripComplete",
+        "type": "object"
+      },
+      "TripCreate": {
+        "properties": {
+          "cargo_weight_kg": {
+            "exclusiveMinimum": 0.0,
+            "title": "Cargo Weight Kg",
+            "type": "number"
+          },
+          "destination": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Destination",
+            "type": "string"
+          },
+          "driver_id": {
+            "title": "Driver Id",
+            "type": "integer"
+          },
+          "planned_distance_km": {
+            "exclusiveMinimum": 0.0,
+            "title": "Planned Distance Km",
+            "type": "number"
+          },
+          "source": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Source",
+            "type": "string"
+          },
+          "vehicle_id": {
+            "title": "Vehicle Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "source",
+          "destination",
+          "vehicle_id",
+          "driver_id",
+          "cargo_weight_kg",
+          "planned_distance_km"
+        ],
+        "title": "TripCreate",
+        "type": "object"
+      },
+      "TripRead": {
+        "properties": {
+          "cargo_weight_kg": {
+            "title": "Cargo Weight Kg",
+            "type": "number"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "destination": {
+            "title": "Destination",
+            "type": "string"
+          },
+          "dispatched_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dispatched At"
+          },
+          "driver_id": {
+            "title": "Driver Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "final_odometer": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Final Odometer"
+          },
+          "planned_distance_km": {
+            "title": "Planned Distance Km",
+            "type": "number"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "trip_id": {
+            "title": "Trip Id",
+            "type": "integer"
+          },
+          "vehicle_id": {
+            "title": "Vehicle Id",
+            "type": "integer"
+          },
+          "vehicle_name_model": {
+            "title": "Vehicle Name Model",
+            "type": "string"
+          },
+          "vehicle_reg_no": {
+            "title": "Vehicle Reg No",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trip_id",
+          "source",
+          "destination",
+          "vehicle_id",
+          "vehicle_reg_no",
+          "vehicle_name_model",
+          "driver_id",
+          "driver_name",
+          "cargo_weight_kg",
+          "planned_distance_km",
+          "final_odometer",
+          "status",
+          "dispatched_at",
+          "completed_at"
+        ],
+        "title": "TripRead",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "VehicleCreate": {
+        "properties": {
+          "acquisition_cost": {
+            "minimum": 0.0,
+            "title": "Acquisition Cost",
+            "type": "number"
+          },
+          "max_capacity_kg": {
+            "exclusiveMinimum": 0.0,
+            "title": "Max Capacity Kg",
+            "type": "number"
+          },
+          "name_model": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Name Model",
+            "type": "string"
+          },
+          "odometer": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Odometer",
+            "type": "integer"
+          },
+          "reg_no": {
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Reg No",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "Van",
+              "Truck",
+              "Mini"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reg_no",
+          "name_model",
+          "type",
+          "max_capacity_kg",
+          "acquisition_cost"
+        ],
+        "title": "VehicleCreate",
+        "type": "object"
+      },
+      "VehicleRead": {
+        "properties": {
+          "acquisition_cost": {
+            "title": "Acquisition Cost",
+            "type": "number"
+          },
+          "max_capacity_kg": {
+            "title": "Max Capacity Kg",
+            "type": "number"
+          },
+          "name_model": {
+            "title": "Name Model",
+            "type": "string"
+          },
+          "odometer": {
+            "title": "Odometer",
+            "type": "integer"
+          },
+          "reg_no": {
+            "title": "Reg No",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "vehicle_id": {
+            "title": "Vehicle Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "vehicle_id",
+          "reg_no",
+          "name_model",
+          "type",
+          "max_capacity_kg",
+          "odometer",
+          "acquisition_cost",
+          "status"
+        ],
+        "title": "VehicleRead",
+        "type": "object"
       }
     }
   },
@@ -90,6 +873,335 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/drivers": {
+      "get": {
+        "description": "List drivers. ``dispatchable=true`` returns only eligible drivers\n(Available with a licence that has not expired).",
+        "operationId": "list_drivers_api_v1_drivers_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "dispatchable",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Dispatchable",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DriverRead"
+                  },
+                  "title": "Response List Drivers Api V1 Drivers Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Drivers",
+        "tags": [
+          "drivers"
+        ]
+      },
+      "post": {
+        "description": "Create a driver profile. ``license_no`` must be unique.",
+        "operationId": "create_driver_api_v1_drivers_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DriverCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriverRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Driver",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/v1/drivers/{driver_id}/status": {
+      "patch": {
+        "description": "Manually change a driver's duty status (Screen 3 inline control).\n\n'On Trip' is managed by the dispatcher and cannot be set by hand here.",
+        "operationId": "update_driver_status_api_v1_drivers__driver_id__status_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "driver_id",
+            "required": true,
+            "schema": {
+              "title": "Driver Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DriverStatusUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriverRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Driver Status",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/v1/expenses": {
+      "get": {
+        "description": "List expenses newest first, optionally scoped to a vehicle. Includes both\nmanual (Toll/Other) and auto-posted Maintenance rows.",
+        "operationId": "list_expenses_api_v1_expenses_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "vehicle_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vehicle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ExpenseRead"
+                  },
+                  "title": "Response List Expenses Api V1 Expenses Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Expenses",
+        "tags": [
+          "finance"
+        ]
+      },
+      "post": {
+        "description": "Record a manual Toll or Other expense. Maintenance expenses are posted\nautomatically from the maintenance screen, so they cannot be created here.",
+        "operationId": "create_expense_api_v1_expenses_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpenseCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Expense",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/fuel": {
+      "get": {
+        "description": "List fuel logs newest first, optionally scoped to a vehicle.",
+        "operationId": "list_fuel_api_v1_fuel_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "vehicle_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vehicle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FuelRead"
+                  },
+                  "title": "Response List Fuel Api V1 Fuel Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Fuel",
+        "tags": [
+          "finance"
+        ]
+      },
+      "post": {
+        "description": "Log fuel for a vehicle, optionally attributed to one of its trips.",
+        "operationId": "create_fuel_api_v1_fuel_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FuelCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FuelRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Fuel",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
     "/api/v1/health": {
       "get": {
         "operationId": "health_api_v1_health_get",
@@ -139,6 +1251,464 @@
         "summary": "Readiness",
         "tags": [
           "system"
+        ]
+      }
+    },
+    "/api/v1/maintenance": {
+      "get": {
+        "description": "List maintenance records newest first, optionally scoped to a vehicle.",
+        "operationId": "list_maintenance_api_v1_maintenance_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "vehicle_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vehicle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MaintenanceRead"
+                  },
+                  "title": "Response List Maintenance Api V1 Maintenance Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Maintenance",
+        "tags": [
+          "maintenance"
+        ]
+      },
+      "post": {
+        "description": "Log a maintenance record and apply its side effects.\n\nActive -> vehicle set to In Shop. trip_id set -> auto-post a Maintenance\nexpense linked back to this record (only when the trip belongs to the\nvehicle).",
+        "operationId": "create_maintenance_api_v1_maintenance_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaintenanceCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Maintenance",
+        "tags": [
+          "maintenance"
+        ]
+      }
+    },
+    "/api/v1/maintenance/{maintenance_id}/close": {
+      "post": {
+        "description": "Complete a maintenance record. The vehicle returns to Available unless it\nwas Retired (rule 10).",
+        "operationId": "close_maintenance_api_v1_maintenance__maintenance_id__close_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "maintenance_id",
+            "required": true,
+            "schema": {
+              "title": "Maintenance Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Close Maintenance",
+        "tags": [
+          "maintenance"
+        ]
+      }
+    },
+    "/api/v1/trips": {
+      "get": {
+        "description": "List trips newest first. ``vehicle_id`` scopes results to one vehicle,\nwhich powers the optional trip pickers on the fuel and maintenance screens.",
+        "operationId": "list_trips_api_v1_trips_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "vehicle_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vehicle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TripRead"
+                  },
+                  "title": "Response List Trips Api V1 Trips Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Trips",
+        "tags": [
+          "trips"
+        ]
+      },
+      "post": {
+        "description": "Create a Draft trip. Dispatch happens as a separate, validated step.",
+        "operationId": "create_trip_api_v1_trips_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Trip",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
+    "/api/v1/trips/{trip_id}/cancel": {
+      "post": {
+        "description": "Cancel a Draft or Dispatched trip. A dispatched trip releases its\nvehicle and driver back to Available.",
+        "operationId": "cancel_trip_api_v1_trips__trip_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trip_id",
+            "required": true,
+            "schema": {
+              "title": "Trip Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Trip",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
+    "/api/v1/trips/{trip_id}/complete": {
+      "post": {
+        "description": "Dispatched -> Completed. Writes final_odometer, rolls the vehicle\nodometer forward, and returns vehicle and driver to Available.",
+        "operationId": "complete_trip_api_v1_trips__trip_id__complete_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trip_id",
+            "required": true,
+            "schema": {
+              "title": "Trip Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripComplete"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Complete Trip",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
+    "/api/v1/trips/{trip_id}/dispatch": {
+      "post": {
+        "description": "Draft -> Dispatched. Enforces capacity, vehicle/driver availability, and\nthe no-double-booking rule, then flags both resources On Trip.",
+        "operationId": "dispatch_trip_api_v1_trips__trip_id__dispatch_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trip_id",
+            "required": true,
+            "schema": {
+              "title": "Trip Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dispatch Trip",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
+    "/api/v1/vehicles": {
+      "get": {
+        "description": "List vehicles, newest first. ``dispatchable=true`` returns only the pool\neligible for trip dispatch (Available; never Retired or In Shop).",
+        "operationId": "list_vehicles_api_v1_vehicles_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "dispatchable",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Dispatchable",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VehicleRead"
+                  },
+                  "title": "Response List Vehicles Api V1 Vehicles Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Vehicles",
+        "tags": [
+          "vehicles"
+        ]
+      },
+      "post": {
+        "description": "Register a new vehicle. ``reg_no`` must be unique.",
+        "operationId": "create_vehicle_api_v1_vehicles_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VehicleCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Vehicle",
+        "tags": [
+          "vehicles"
         ]
       }
     }

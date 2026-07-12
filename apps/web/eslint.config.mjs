@@ -6,4 +6,8 @@ export default defineConfig([
   ...nextVitals,
   ...nextTypescript,
   globalIgnores([".next/**", "coverage/**", "next-env.d.ts"]),
+  {
+    files: ["src/components/shared/data-table.tsx"],
+    rules: { "react-hooks/incompatible-library": "off" },
+  },
 ]);

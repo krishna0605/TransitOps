@@ -18,13 +18,13 @@ export function Logo({
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <span
         aria-hidden="true"
-        className="grid size-8 place-items-center rounded-lg bg-brand text-brand-foreground shadow-sm"
+        className="bg-brand text-brand-foreground grid size-8 place-items-center rounded-lg shadow-sm"
       >
         <span className="grid grid-cols-2 gap-0.5">
-          <span className="size-1.5 rounded-[2px] bg-brand-foreground" />
-          <span className="size-1.5 rounded-[2px] bg-brand-foreground/40" />
-          <span className="size-1.5 rounded-[2px] bg-brand-foreground/40" />
-          <span className="size-1.5 rounded-[2px] bg-brand-foreground" />
+          <span className="bg-brand-foreground size-1.5 rounded-[2px]" />
+          <span className="bg-brand-foreground/40 size-1.5 rounded-[2px]" />
+          <span className="bg-brand-foreground/40 size-1.5 rounded-[2px]" />
+          <span className="bg-brand-foreground size-1.5 rounded-[2px]" />
         </span>
       </span>
       {showText && (

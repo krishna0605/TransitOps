@@ -20,7 +20,7 @@
     "test:web": "pnpm --dir apps/web test",
     "test:api": "python -m pytest apps/api",
     "build": "pnpm --dir apps/web build",
-    "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build",
+    "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build && pnpm api:check",
     "api:openapi": "python scripts/export_openapi.py",
     "api:types": "pnpm --dir packages/api-client generate",
     "api:generate": "pnpm api:openapi && pnpm api:types",

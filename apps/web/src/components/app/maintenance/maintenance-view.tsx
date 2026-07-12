@@ -6,12 +6,7 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -30,53 +25,67 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  type Maintenance,
-  maintenanceLogs as seedLogs,
-  vehicles,
-} from "@/lib/mock-data";
+  useCloseMaintenance,
+  useCreateMaintenance,
+  useMaintenance,
+  useVehicles,
+} from "@/lib/api/hooks";
 
-const EMPTY = { vehicle: "", service: "", cost: "", date: "", status: "Active" };
+const EMPTY = {
+  vehicle: "",
+  service: "",
+  cost: "",
+  date: "",
+  status: "Active",
+};
 
 export function MaintenanceView() {
-  const [logs, setLogs] = useState<Maintenance[]>(seedLogs);
+  const maintenanceQuery = useMaintenance();
+  const vehiclesQuery = useVehicles();
+  const createMaintenance = useCreateMaintenance();
+  const closeMaintenance = useCloseMaintenance();
+  const logs = maintenanceQuery.data ?? [];
+  const vehicles = vehiclesQuery.data ?? [];
   const [form, setForm] = useState(EMPTY);
 
   function set(field: keyof typeof EMPTY, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  function save() {
+  async function save() {
     if (!form.vehicle || !form.service || !form.cost) {
       toast.error("Vehicle, service type, and cost are required.");
       return;
     }
-    setLogs((prev) => [
-      {
-        id: Math.max(0, ...prev.map((l) => l.id)) + 1,
-        vehicle: form.vehicle,
-        service: form.service,
-        cost: Number(form.cost) || 0,
-        date: form.date || new Date().toISOString().slice(0, 10),
-        status: form.status === "Completed" ? "Completed" : "Active",
-      },
-      ...prev,
-    ]);
-    toast.success("Maintenance logged", {
-      description:
-        form.status === "Active"
-          ? `${form.vehicle} moved to In Shop`
-          : form.vehicle,
-    });
-    setForm(EMPTY);
+    try {
+      await createMaintenance.mutateAsync({
+        vehicle_id: Number(form.vehicle),
+        service_type: form.service,
+        cost: Number(form.cost),
+        service_date: form.date || null,
+        status: form.status as "Active" | "Completed",
+        trip_id: null,
+      });
+      toast.success("Maintenance logged");
+      setForm(EMPTY);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not log maintenance.",
+      );
+    }
   }
 
-  function close(id: number) {
-    setLogs((prev) =>
-      prev.map((l) => (l.id === id ? { ...l, status: "Completed" } : l)),
-    );
-    toast.success("Maintenance closed", {
-      description: "Vehicle returned to Available",
-    });
+  async function close(maintenanceId: number) {
+    try {
+      await closeMaintenance.mutateAsync(maintenanceId);
+      toast.success("Maintenance closed", {
+        description: "Vehicle returned to Available",
+      });
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not close maintenance.",
+      );
+    }
   }
 
   return (
@@ -103,8 +112,8 @@ export function MaintenanceView() {
                 </SelectTrigger>
                 <SelectContent>
                   {vehicles.map((v) => (
-                    <SelectItem key={v.id} value={v.nameModel}>
-                      {v.nameModel}
+                    <SelectItem key={v.vehicle_id} value={String(v.vehicle_id)}>
+                      {v.name_model}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -155,9 +164,9 @@ export function MaintenanceView() {
             <Button onClick={save} className="w-full">
               Save record
             </Button>
-            <p className="text-xs text-muted-foreground">
-              Active → vehicle set to In Shop and hidden from dispatch. Closing →
-              vehicle returns to Available (unless Retired).
+            <p className="text-muted-foreground text-xs">
+              Active → vehicle set to In Shop and hidden from dispatch. Closing
+              → vehicle returns to Available (unless Retired).
             </p>
           </CardContent>
         </Card>
@@ -180,18 +189,22 @@ export function MaintenanceView() {
               </TableHeader>
               <TableBody>
                 {logs.map((log) => (
-                  <TableRow key={log.id}>
-                    <TableCell className="font-medium">{log.vehicle}</TableCell>
-                    <TableCell>{log.service}</TableCell>
+                  <TableRow key={log.maintenance_id}>
+                    <TableCell className="font-medium">
+                      {log.vehicle_reg_no}
+                    </TableCell>
+                    <TableCell>{log.service_type}</TableCell>
                     <TableCell className="text-right tabular-nums">
                       ₹{log.cost.toLocaleString()}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {log.date}
+                      {log.service_date}
                     </TableCell>
                     <TableCell>
                       <StatusBadge
-                        status={log.status === "Active" ? "In Shop" : "Completed"}
+                        status={
+                          log.status === "Active" ? "In Shop" : "Completed"
+                        }
                       />
                     </TableCell>
                     <TableCell className="text-right">
@@ -199,12 +212,12 @@ export function MaintenanceView() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => close(log.id)}
+                          onClick={() => close(log.maintenance_id)}
                         >
                           Close
                         </Button>
                       ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
+                        <span className="text-muted-foreground text-xs">—</span>
                       )}
                     </TableCell>
                   </TableRow>
