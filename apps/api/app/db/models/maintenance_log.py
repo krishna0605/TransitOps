@@ -1,40 +1,28 @@
-from __future__ import annotations
+from datetime import date, datetime
+from decimal import Decimal
+from uuid import UUID
 
-from datetime import date
-from typing import TYPE_CHECKING
-
-from sqlalchemy import CheckConstraint, Date, Float, ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Date, DateTime, ForeignKey, Index, String, Uuid
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
-from app.db.constants import MAINTENANCE_STATUSES, in_check
-
-if TYPE_CHECKING:
-    from app.db.models.expense import Expense
-    from app.db.models.trip import Trip
-    from app.db.models.vehicle import Vehicle
+from app.db.mixins import Money, TimestampMixin, UUIDPrimaryKeyMixin, VersionMixin
 
 
-class MaintenanceLog(Base):
-    __tablename__ = "maintenance_log"
-    __table_args__ = (
-        CheckConstraint(in_check("status", MAINTENANCE_STATUSES), name="status_valid"),
-    )
+class MaintenanceLog(UUIDPrimaryKeyMixin, TimestampMixin, VersionMixin, Base):
+    __tablename__ = "maintenance_logs"
+    __table_args__ = (Index("ix_maintenance_org_status", "organization_id", "status"),)
 
-    maintenance_id: Mapped[int] = mapped_column(primary_key=True)
-    vehicle_id: Mapped[int] = mapped_column(
-        ForeignKey("vehicle.vehicle_id"), nullable=False, index=True
-    )
-    # Set only when this maintenance is tied to a specific trip.
-    trip_id: Mapped[int | None] = mapped_column(
-        ForeignKey("trip.trip_id"), nullable=True, index=True
-    )
-    service_type: Mapped[str] = mapped_column(String, nullable=False)
-    cost: Mapped[float] = mapped_column(Float, nullable=False)
+    organization_id: Mapped[UUID] = mapped_column(Uuid, ForeignKey("organizations.id"))
+    vehicle_id: Mapped[UUID] = mapped_column(Uuid, ForeignKey("vehicles.id"), index=True)
+    trip_id: Mapped[UUID | None] = mapped_column(Uuid, ForeignKey("trips.id"), index=True)
+    service_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    priority: Mapped[str] = mapped_column(String(20), nullable=False, default="NORMAL")
+    cost: Mapped[Decimal] = mapped_column(Money, nullable=False)
     service_date: Mapped[date] = mapped_column(Date, nullable=False)
-    status: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="ACTIVE")
+    closed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    vehicle: Mapped[Vehicle] = relationship(back_populates="maintenance_logs")
-    trip: Mapped[Trip | None] = relationship(back_populates="maintenance_logs")
-    # Optional one-to-one: an auto-posted expense created when trip_id is set.
-    expense: Mapped[Expense | None] = relationship(back_populates="maintenance_log")
+    @property
+    def maintenance_id(self) -> UUID:
+        return self.id
