@@ -22,9 +22,14 @@ __pycache__/
 # IDE and operating system
 .idea/
 .vscode/
+.claude/
 .DS_Store
 Thumbs.db
 
 # Local runtime data
 .data/
 *.log
+packages/api-client/openapi.json
+
+# Dont remove this , Kavish specific.
+Archive/
