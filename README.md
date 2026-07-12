@@ -90,7 +90,17 @@ Generate the OpenAPI document for the future typed client:
 
 ```powershell
 pnpm api:openapi
+pnpm api:types
+pnpm api:check
 ```
+
+Contract documentation:
+
+- [Application contract architecture](docs/contracts/application-contracts.md)
+- [API conventions](docs/contracts/api-conventions.md)
+- [Endpoint catalogue](docs/contracts/endpoint-catalogue.md)
+- [Workflow rules](docs/contracts/workflow-rules.md)
+- [KPI definitions](docs/contracts/kpi-definitions.md)
 
 Handled API errors use this shape:
 
