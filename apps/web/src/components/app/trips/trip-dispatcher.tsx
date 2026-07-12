@@ -1,13 +1,21 @@
 "use client";
 
-import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -17,6 +25,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import {
   useCreateTrip,
@@ -47,6 +63,7 @@ export function TripDispatcher() {
   const vehicles = vehiclesQuery.data ?? [];
   const drivers = driversQuery.data ?? [];
   const [form, setForm] = useState(EMPTY);
+  const [open, setOpen] = useState(false);
 
   // Business rules: only Available vehicles and eligible drivers can dispatch.
   const availableVehicles = vehicles.filter(
@@ -101,6 +118,7 @@ export function TripDispatcher() {
         description: `${trip.vehicle_name_model} · ${trip.driver_name}`,
       });
       setForm(EMPTY);
+      setOpen(false);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Could not dispatch trip.",
@@ -110,7 +128,7 @@ export function TripDispatcher() {
 
   async function advance(
     id: string,
-    action: "complete" | "cancel",
+    action: "dispatch" | "complete" | "cancel",
     version: number,
   ) {
     try {
@@ -128,6 +146,142 @@ export function TripDispatcher() {
       <PageHeader
         title="Trip dispatcher"
         description="Create trips against available vehicles and drivers."
+        actions={
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="size-4" />
+                New trip
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Create trip</DialogTitle>
+                <DialogDescription>
+                  Dispatch against an available vehicle and driver.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Source</Label>
+                    <Input
+                      value={form.source}
+                      onChange={(e) => set("source", e.target.value)}
+                      placeholder="Gandhinagar Depot"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Destination</Label>
+                    <Input
+                      value={form.destination}
+                      onChange={(e) => set("destination", e.target.value)}
+                      placeholder="Ahmedabad Hub"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Vehicle (available only)</Label>
+                    <Select
+                      value={form.vehicle}
+                      onValueChange={(v) => set("vehicle", v)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select vehicle" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableVehicles.map((v) => (
+                          <SelectItem
+                            key={v.vehicle_id}
+                            value={String(v.vehicle_id)}
+                          >
+                            {v.name_model} · {v.max_capacity_kg} kg
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Driver (available only)</Label>
+                    <Select
+                      value={form.driver}
+                      onValueChange={(v) => set("driver", v)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select driver" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableDrivers.map((d) => (
+                          <SelectItem
+                            key={d.driver_id}
+                            value={String(d.driver_id)}
+                          >
+                            {d.name} · {d.license_category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Cargo weight (kg)</Label>
+                    <Input
+                      type="number"
+                      value={form.cargo}
+                      onChange={(e) => set("cargo", e.target.value)}
+                      placeholder="450"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Planned distance (km)</Label>
+                    <Input
+                      type="number"
+                      value={form.distance}
+                      onChange={(e) => set("distance", e.target.value)}
+                      placeholder="58"
+                    />
+                  </div>
+                </div>
+
+                {/* Live capacity check */}
+                {selectedVehicle ? (
+                  <div
+                    className={cn(
+                      "flex items-start gap-2 rounded-lg border p-3 text-sm",
+                      blocked
+                        ? "border-red-500/30 bg-red-500/10 text-red-700"
+                        : "border-emerald-500/30 bg-emerald-500/10 text-emerald-700",
+                    )}
+                  >
+                    {blocked ? (
+                      <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+                    ) : (
+                      <CheckCircle2 className="mt-0.5 size-4 shrink-0" />
+                    )}
+                    <div>
+                      <p>
+                        Vehicle capacity {capacity} kg · Cargo {cargo} kg
+                      </p>
+                      <p className="font-medium">
+                        {blocked
+                          ? `Capacity exceeded by ${over} kg → dispatch blocked`
+                          : "Within capacity → ready to dispatch"}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
+
+                <div className="flex gap-2">
+                  <Button onClick={dispatch} disabled={!canDispatch}>
+                    Dispatch
+                  </Button>
+                  <Button variant="outline" onClick={() => setForm(EMPTY)}>
+                    Reset
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        }
       />
 
       {/* Lifecycle */}
@@ -156,178 +310,89 @@ export function TripDispatcher() {
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        {/* Create trip */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Create trip</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Source</Label>
-                <Input
-                  value={form.source}
-                  onChange={(e) => set("source", e.target.value)}
-                  placeholder="Gandhinagar Depot"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Destination</Label>
-                <Input
-                  value={form.destination}
-                  onChange={(e) => set("destination", e.target.value)}
-                  placeholder="Ahmedabad Hub"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Vehicle (available only)</Label>
-                <Select
-                  value={form.vehicle}
-                  onValueChange={(v) => set("vehicle", v)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select vehicle" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableVehicles.map((v) => (
-                      <SelectItem
-                        key={v.vehicle_id}
-                        value={String(v.vehicle_id)}
-                      >
-                        {v.name_model} · {v.max_capacity_kg} kg
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Driver (available only)</Label>
-                <Select
-                  value={form.driver}
-                  onValueChange={(v) => set("driver", v)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select driver" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableDrivers.map((d) => (
-                      <SelectItem key={d.driver_id} value={String(d.driver_id)}>
-                        {d.name} · {d.license_category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Cargo weight (kg)</Label>
-                <Input
-                  type="number"
-                  value={form.cargo}
-                  onChange={(e) => set("cargo", e.target.value)}
-                  placeholder="450"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Planned distance (km)</Label>
-                <Input
-                  type="number"
-                  value={form.distance}
-                  onChange={(e) => set("distance", e.target.value)}
-                  placeholder="58"
-                />
-              </div>
-            </div>
-
-            {/* Live capacity check */}
-            {selectedVehicle ? (
-              <div
-                className={cn(
-                  "flex items-start gap-2 rounded-lg border p-3 text-sm",
-                  blocked
-                    ? "border-red-500/30 bg-red-500/10 text-red-700"
-                    : "border-emerald-500/30 bg-emerald-500/10 text-emerald-700",
-                )}
-              >
-                {blocked ? (
-                  <AlertTriangle className="mt-0.5 size-4 shrink-0" />
-                ) : (
-                  <CheckCircle2 className="mt-0.5 size-4 shrink-0" />
-                )}
-                <div>
-                  <p>
-                    Vehicle capacity {capacity} kg · Cargo {cargo} kg
-                  </p>
-                  <p className="font-medium">
-                    {blocked
-                      ? `Capacity exceeded by ${over} kg → dispatch blocked`
-                      : "Within capacity → ready to dispatch"}
-                  </p>
-                </div>
-              </div>
-            ) : null}
-
-            <div className="flex gap-2">
-              <Button onClick={dispatch} disabled={!canDispatch}>
-                Dispatch
-              </Button>
-              <Button variant="outline" onClick={() => setForm(EMPTY)}>
-                Reset
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Live board */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Live board</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {board.map((trip) => (
-              <div
-                key={trip.trip_id}
-                className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">Trip #{trip.trip_id}</span>
-                    <StatusBadge status={trip.status} />
-                  </div>
-                  <p className="text-muted-foreground text-sm">
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Route</TableHead>
+                <TableHead>Vehicle</TableHead>
+                <TableHead>Driver</TableHead>
+                <TableHead className="text-right">Cargo</TableHead>
+                <TableHead className="text-right">Distance</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {board.map((trip) => (
+                <TableRow key={trip.trip_id}>
+                  <TableCell className="font-medium">
                     {trip.source} → {trip.destination}
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    {trip.vehicle_name_model} · {trip.driver_name}
-                  </p>
-                </div>
-                {trip.status === "Dispatched" ? (
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        advance(trip.trip_id, "complete", trip.version)
-                      }
-                    >
-                      Complete
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() =>
-                        advance(trip.trip_id, "cancel", trip.version)
-                      }
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                ) : null}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
+                  </TableCell>
+                  <TableCell>{trip.vehicle_reg_no}</TableCell>
+                  <TableCell>{trip.driver_name}</TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {trip.cargo_weight_kg.toLocaleString()} kg
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {trip.planned_distance_km.toLocaleString()} km
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={trip.status} />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {trip.status === "Draft" ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          advance(trip.trip_id, "dispatch", trip.version)
+                        }
+                      >
+                        Dispatch
+                      </Button>
+                    ) : trip.status === "Dispatched" ? (
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            advance(trip.trip_id, "complete", trip.version)
+                          }
+                        >
+                          Complete
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() =>
+                            advance(trip.trip_id, "cancel", trip.version)
+                          }
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground text-xs">—</span>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+              {board.length === 0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="text-muted-foreground py-10 text-center"
+                  >
+                    No trips yet. Create one to get started.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       <p className="text-muted-foreground text-sm">
         On completion: odometer → fuel log → expenses; vehicle and driver return

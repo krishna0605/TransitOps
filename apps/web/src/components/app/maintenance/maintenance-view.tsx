@@ -1,12 +1,21 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -47,6 +56,7 @@ export function MaintenanceView() {
   const logs = maintenanceQuery.data ?? [];
   const vehicles = vehiclesQuery.data ?? [];
   const [form, setForm] = useState(EMPTY);
+  const [open, setOpen] = useState(false);
 
   function set(field: keyof typeof EMPTY, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -68,6 +78,7 @@ export function MaintenanceView() {
       });
       toast.success("Maintenance logged");
       setForm(EMPTY);
+      setOpen(false);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Could not log maintenance.",
@@ -93,140 +104,163 @@ export function MaintenanceView() {
       <PageHeader
         title="Maintenance"
         description="Log service records. Active records move a vehicle to In Shop."
+        actions={
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="size-4" />
+                New maintenance
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Log service record</DialogTitle>
+                <DialogDescription>
+                  Active → vehicle set to In Shop and hidden from dispatch.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Vehicle</Label>
+                  <Select
+                    value={form.vehicle}
+                    onValueChange={(v) => set("vehicle", v)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select vehicle" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {vehicles.map((v) => (
+                        <SelectItem
+                          key={v.vehicle_id}
+                          value={String(v.vehicle_id)}
+                        >
+                          {v.name_model}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Service type</Label>
+                  <Input
+                    value={form.service}
+                    onChange={(e) => set("service", e.target.value)}
+                    placeholder="Oil Change"
+                  />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Cost (₹)</Label>
+                    <Input
+                      type="number"
+                      value={form.cost}
+                      onChange={(e) => set("cost", e.target.value)}
+                      placeholder="2500"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Date</Label>
+                    <Input
+                      type="date"
+                      value={form.date}
+                      onChange={(e) => set("date", e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Status</Label>
+                  <Select
+                    value={form.status}
+                    onValueChange={(v) => set("status", v)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Active">Active (In Shop)</SelectItem>
+                      <SelectItem value="Completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button onClick={save} className="w-full">
+                  Save record
+                </Button>
+                <p className="text-muted-foreground text-xs">
+                  Active → vehicle set to In Shop and hidden from dispatch.
+                  Closing → vehicle returns to Available (unless Retired).
+                </p>
+              </div>
+            </DialogContent>
+          </Dialog>
+        }
       />
 
-      <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-        <Card>
-          <CardHeader>
-            <CardTitle>Log service record</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Vehicle</Label>
-              <Select
-                value={form.vehicle}
-                onValueChange={(v) => set("vehicle", v)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select vehicle" />
-                </SelectTrigger>
-                <SelectContent>
-                  {vehicles.map((v) => (
-                    <SelectItem key={v.vehicle_id} value={String(v.vehicle_id)}>
-                      {v.name_model}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Service type</Label>
-              <Input
-                value={form.service}
-                onChange={(e) => set("service", e.target.value)}
-                placeholder="Oil Change"
-              />
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Cost (₹)</Label>
-                <Input
-                  type="number"
-                  value={form.cost}
-                  onChange={(e) => set("cost", e.target.value)}
-                  placeholder="2500"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Date</Label>
-                <Input
-                  type="date"
-                  value={form.date}
-                  onChange={(e) => set("date", e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select
-                value={form.status}
-                onValueChange={(v) => set("status", v)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Active">Active (In Shop)</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button onClick={save} className="w-full">
-              Save record
-            </Button>
-            <p className="text-muted-foreground text-xs">
-              Active → vehicle set to In Shop and hidden from dispatch. Closing
-              → vehicle returns to Available (unless Retired).
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Service log</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Vehicle</TableHead>
-                  <TableHead>Service</TableHead>
-                  <TableHead className="text-right">Cost</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Vehicle</TableHead>
+                <TableHead>Service</TableHead>
+                <TableHead className="text-right">Cost</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Trip</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {logs.map((log) => (
+                <TableRow key={log.maintenance_id}>
+                  <TableCell className="font-medium">
+                    {log.vehicle_reg_no}
+                  </TableCell>
+                  <TableCell>{log.service_type}</TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    ₹{log.cost.toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {log.service_date}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {log.trip_id ?? "—"}
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge
+                      status={log.status === "Active" ? "In Shop" : "Completed"}
+                    />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {log.status === "Active" ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => close(log.maintenance_id, log.version)}
+                      >
+                        Close
+                      </Button>
+                    ) : (
+                      <span className="text-muted-foreground text-xs">—</span>
+                    )}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {logs.map((log) => (
-                  <TableRow key={log.maintenance_id}>
-                    <TableCell className="font-medium">
-                      {log.vehicle_reg_no}
-                    </TableCell>
-                    <TableCell>{log.service_type}</TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      ₹{log.cost.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {log.service_date}
-                    </TableCell>
-                    <TableCell>
-                      <StatusBadge
-                        status={
-                          log.status === "Active" ? "In Shop" : "Completed"
-                        }
-                      />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {log.status === "Active" ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => close(log.maintenance_id, log.version)}
-                        >
-                          Close
-                        </Button>
-                      ) : (
-                        <span className="text-muted-foreground text-xs">—</span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
+              ))}
+              {logs.length === 0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="text-muted-foreground py-10 text-center"
+                  >
+                    No maintenance records yet.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </>
   );
 }
