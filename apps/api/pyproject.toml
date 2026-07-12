@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "transitops-api"
+version = "0.1.0"
+description = "TransitOps FastAPI service"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "alembic>=1.18,<2",
+  "fastapi>=0.135,<1",
+  "psycopg[binary]>=3.3,<4",
+  "pydantic-settings>=2.13,<3",
+  "pwdlib[argon2]>=0.3,<1",
+  "PyJWT>=2.12,<3",
+  "python-multipart>=0.0.22,<1",
+  "sqlalchemy>=2.0.48,<3",
+  "structlog>=25.5,<26",
+  "uvicorn[standard]>=0.41,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx2>=2.5,<3",
+  "mypy>=1.19,<2",
+  "pytest>=9,<10",
+  "pytest-asyncio>=1.3,<2",
+  "pytest-cov>=7,<8",
+  "ruff>=0.15,<1",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-markers --strict-config -q"
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "ASYNC"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+exclude = ["migrations"]
+
+[[tool.mypy.overrides]]
+module = ["structlog.*"]
+ignore_missing_imports = true
