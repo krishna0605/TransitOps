@@ -14,7 +14,7 @@
     "format:check": "pnpm --dir apps/web format:check && python -m ruff format --check apps/api",
     "typecheck": "pnpm typecheck:web && pnpm typecheck:api",
     "typecheck:web": "pnpm --dir apps/web typecheck",
-    "typecheck:api": "python -m mypy apps/api/app",
+    "typecheck:api": "python -m mypy apps/api/app apps/api/tests/typecheck",
     "test": "pnpm test:web && pnpm test:api",
     "test:web": "pnpm --dir apps/web test",
     "test:api": "python -m pytest apps/api",

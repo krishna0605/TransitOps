@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import EmailStr, Field
 
-from app.contracts.dto.common import ContractModel
+from app.contracts.dto.common import AwareDateTime, ContractModel
 from app.contracts.enums import UserStatus
 from app.contracts.permissions import Permission
 
@@ -38,3 +38,20 @@ class TokenResponse(ContractModel):
     token_type: Literal["bearer"] = "bearer"
     expires_in: int = Field(gt=0)
     user: CurrentUserResponse
+
+
+class UserCredentialRecord(ContractModel):
+    id: UUID
+    password_hash: str = Field(min_length=1)
+    status: UserStatus
+
+
+class RefreshTokenCreate(ContractModel):
+    id: UUID
+    user_id: UUID
+    token_hash: str = Field(min_length=1)
+    expires_at: AwareDateTime
+
+
+class RefreshTokenRecord(RefreshTokenCreate):
+    revoked_at: AwareDateTime | None = None
