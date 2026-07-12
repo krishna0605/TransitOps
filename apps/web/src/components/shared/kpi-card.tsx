@@ -22,7 +22,7 @@ export function KpiCard({
   return (
     <Card className={cn("border-l-4", ACCENT[tone])}>
       <CardContent className="p-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
           {label}
         </p>
         <p className="mt-2 text-2xl font-semibold tabular-nums">{value}</p>

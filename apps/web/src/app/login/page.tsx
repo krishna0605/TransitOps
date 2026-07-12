@@ -41,7 +41,7 @@ export default function LoginPage() {
           <ul className="mt-4 space-y-3">
             {ROLES.map((role) => (
               <li key={role} className="flex items-center gap-3 text-slate-200">
-                <span className="size-1.5 rounded-full bg-brand" />
+                <span className="bg-brand size-1.5 rounded-full" />
                 {role}
               </li>
             ))}
@@ -61,7 +61,7 @@ export default function LoginPage() {
             <h1 className="text-2xl font-semibold tracking-tight">
               Sign in to your account
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-1 text-sm">
               Enter your credentials to continue.
             </p>
           </div>
@@ -70,9 +70,9 @@ export default function LoginPage() {
             <LoginForm />
           </div>
 
-          <div className="mt-8 rounded-lg border bg-muted/40 p-4">
+          <div className="bg-muted/40 mt-8 rounded-lg border p-4">
             <p className="text-sm font-medium">Access is scoped by role</p>
-            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+            <ul className="text-muted-foreground mt-2 space-y-1 text-sm">
               {ROLE_ACCESS.map((line) => (
                 <li key={line}>{line}</li>
               ))}

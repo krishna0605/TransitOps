@@ -23,7 +23,7 @@ export function UserMenu() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="gap-2 px-2">
           <Avatar className="size-7">
-            <AvatarFallback className="bg-brand text-xs font-semibold text-brand-foreground">
+            <AvatarFallback className="bg-brand text-brand-foreground text-xs font-semibold">
               {CURRENT_USER.initials}
             </AvatarFallback>
           </Avatar>
@@ -35,7 +35,7 @@ export function UserMenu() {
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuLabel className="flex flex-col">
           <span>{CURRENT_USER.name}</span>
-          <span className="text-xs font-normal text-muted-foreground">
+          <span className="text-muted-foreground text-xs font-normal">
             {CURRENT_USER.role}
           </span>
         </DropdownMenuLabel>

@@ -7,12 +7,7 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -39,17 +34,24 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  type Expense,
-  expenses as seedExpenses,
-  type FuelLog,
-  fuelLogs as seedFuel,
-  maintenanceLogs,
-  vehicles,
-} from "@/lib/mock-data";
+  useCreateExpense,
+  useCreateFuel,
+  useExpenses,
+  useFuel,
+  useMaintenance,
+  useVehicles,
+} from "@/lib/api/hooks";
 
 export function FuelExpenseView() {
-  const [fuel, setFuel] = useState<FuelLog[]>(seedFuel);
-  const [expenses, setExpenses] = useState<Expense[]>(seedExpenses);
+  const fuelQuery = useFuel();
+  const expensesQuery = useExpenses();
+  const maintenanceQuery = useMaintenance();
+  const vehiclesQuery = useVehicles();
+  const createFuel = useCreateFuel();
+  const createExpense = useCreateExpense();
+  const fuel = fuelQuery.data ?? [];
+  const expenses = expensesQuery.data ?? [];
+  const vehicles = vehiclesQuery.data ?? [];
   const [fuelOpen, setFuelOpen] = useState(false);
   const [expenseOpen, setExpenseOpen] = useState(false);
 
@@ -69,52 +71,74 @@ export function FuelExpenseView() {
   // Operational cost = fuel + maintenance (per schema).
   const operationalCost = useMemo(() => {
     const fuelTotal = fuel.reduce((sum, f) => sum + f.cost, 0);
-    const maintTotal = maintenanceLogs.reduce((sum, m) => sum + m.cost, 0);
+    const maintTotal = (maintenanceQuery.data ?? []).reduce(
+      (sum, item) => sum + item.cost,
+      0,
+    );
     return fuelTotal + maintTotal;
   }, [fuel]);
 
-  function addFuel() {
+  async function addFuel() {
     if (!fuelForm.vehicle || !fuelForm.liters || !fuelForm.cost) {
       toast.error("Vehicle, liters, and cost are required.");
       return;
     }
-    setFuel((prev) => [
-      {
-        id: Math.max(0, ...prev.map((f) => f.id)) + 1,
-        vehicle: fuelForm.vehicle,
-        date: fuelForm.date || new Date().toISOString().slice(0, 10),
-        liters: Number(fuelForm.liters) || 0,
-        cost: Number(fuelForm.cost) || 0,
-      },
-      ...prev,
-    ]);
-    toast.success("Fuel logged", { description: fuelForm.vehicle });
-    setFuelForm({ vehicle: "", date: "", liters: "", cost: "" });
-    setFuelOpen(false);
+    try {
+      await createFuel.mutateAsync({
+        vehicle_id: Number(fuelForm.vehicle),
+        fuel_date: fuelForm.date || null,
+        liters: Number(fuelForm.liters),
+        cost: Number(fuelForm.cost),
+        trip_id: null,
+      });
+      toast.success("Fuel logged");
+      setFuelForm({ vehicle: "", date: "", liters: "", cost: "" });
+      setFuelOpen(false);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not log fuel.",
+      );
+    }
   }
 
-  function addExpense() {
+  async function addExpense() {
     if (!expenseForm.vehicle) {
       toast.error("Vehicle is required.");
       return;
     }
-    const toll = Number(expenseForm.toll) || 0;
-    const other = Number(expenseForm.other) || 0;
-    setExpenses((prev) => [
-      {
-        id: Math.max(0, ...prev.map((e) => e.id)) + 1,
-        trip: expenseForm.trip || "—",
-        vehicle: expenseForm.vehicle,
-        toll,
-        other,
-        amount: toll + other,
-        status: "Available",
-      },
-      ...prev,
-    ]);
-    toast.success("Expense added", { description: expenseForm.vehicle });
-    setExpenseForm({ trip: "", vehicle: "", toll: "", other: "" });
-    setExpenseOpen(false);
+    try {
+      const toll = Number(expenseForm.toll) || 0;
+      const other = Number(expenseForm.other) || 0;
+      await Promise.all([
+        ...(toll
+          ? [
+              createExpense.mutateAsync({
+                vehicle_id: Number(expenseForm.vehicle),
+                trip_id: expenseForm.trip ? Number(expenseForm.trip) : null,
+                category: "Toll",
+                amount: toll,
+              }),
+            ]
+          : []),
+        ...(other
+          ? [
+              createExpense.mutateAsync({
+                vehicle_id: Number(expenseForm.vehicle),
+                trip_id: expenseForm.trip ? Number(expenseForm.trip) : null,
+                category: "Other",
+                amount: other,
+              }),
+            ]
+          : []),
+      ]);
+      toast.success("Expense added");
+      setExpenseForm({ trip: "", vehicle: "", toll: "", other: "" });
+      setExpenseOpen(false);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not add expense.",
+      );
+    }
   }
 
   return (
@@ -149,8 +173,11 @@ export function FuelExpenseView() {
                       </SelectTrigger>
                       <SelectContent>
                         {vehicles.map((v) => (
-                          <SelectItem key={v.id} value={v.nameModel}>
-                            {v.nameModel}
+                          <SelectItem
+                            key={v.vehicle_id}
+                            value={String(v.vehicle_id)}
+                          >
+                            {v.name_model}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -228,8 +255,11 @@ export function FuelExpenseView() {
                       </SelectTrigger>
                       <SelectContent>
                         {vehicles.map((v) => (
-                          <SelectItem key={v.id} value={v.nameModel}>
-                            {v.nameModel}
+                          <SelectItem
+                            key={v.vehicle_id}
+                            value={String(v.vehicle_id)}
+                          >
+                            {v.name_model}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -268,7 +298,7 @@ export function FuelExpenseView() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Fuel className="size-4 text-muted-foreground" />
+            <Fuel className="text-muted-foreground size-4" />
             Fuel logs
           </CardTitle>
         </CardHeader>
@@ -284,10 +314,12 @@ export function FuelExpenseView() {
             </TableHeader>
             <TableBody>
               {fuel.map((f) => (
-                <TableRow key={f.id}>
-                  <TableCell className="font-medium">{f.vehicle}</TableCell>
+                <TableRow key={f.fuel_id}>
+                  <TableCell className="font-medium">
+                    {f.vehicle_reg_no}
+                  </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {f.date}
+                    {f.fuel_date}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
                     {f.liters} L
@@ -305,7 +337,7 @@ export function FuelExpenseView() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Receipt className="size-4 text-muted-foreground" />
+            <Receipt className="text-muted-foreground size-4" />
             Other expenses (toll / other)
           </CardTitle>
         </CardHeader>
@@ -323,14 +355,16 @@ export function FuelExpenseView() {
             </TableHeader>
             <TableBody>
               {expenses.map((e) => (
-                <TableRow key={e.id}>
-                  <TableCell className="font-medium">{e.trip}</TableCell>
-                  <TableCell>{e.vehicle}</TableCell>
+                <TableRow key={e.expense_id}>
+                  <TableCell className="font-medium">
+                    {e.trip_label ?? "—"}
+                  </TableCell>
+                  <TableCell>{e.vehicle_reg_no}</TableCell>
                   <TableCell className="text-right tabular-nums">
-                    ₹{e.toll.toLocaleString()}
+                    ₹{(e.category === "Toll" ? e.amount : 0).toLocaleString()}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
-                    ₹{e.other.toLocaleString()}
+                    ₹{(e.category === "Other" ? e.amount : 0).toLocaleString()}
                   </TableCell>
                   <TableCell className="text-right font-medium tabular-nums">
                     ₹{e.amount.toLocaleString()}
@@ -345,10 +379,10 @@ export function FuelExpenseView() {
         </CardContent>
       </Card>
 
-      <Card className="border-l-4 border-l-brand">
+      <Card className="border-l-brand border-l-4">
         <CardContent className="flex items-center justify-between p-6">
           <div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Total operational cost (auto) — Fuel + Maintenance
             </p>
             <p className="mt-1 text-3xl font-semibold tabular-nums">

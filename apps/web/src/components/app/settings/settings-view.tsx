@@ -39,13 +39,16 @@ const MATRIX: { role: string; access: Access[] }[] = [
   { role: "Fleet Manager", access: ["Full", "Full", "None", "None", "Full"] },
   { role: "Dispatcher", access: ["View", "None", "Full", "None", "None"] },
   { role: "Safety Officer", access: ["None", "Full", "View", "None", "None"] },
-  { role: "Financial Analyst", access: ["View", "None", "None", "Full", "Full"] },
+  {
+    role: "Financial Analyst",
+    access: ["View", "None", "None", "Full", "Full"],
+  },
 ];
 
 function AccessCell({ access }: { access: Access }) {
   if (access === "Full") {
     return (
-      <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+      <span className="inline-flex items-center gap-1 text-emerald-600">
         <Check className="size-4" />
         <span className="text-xs">Full</span>
       </span>
@@ -53,13 +56,13 @@ function AccessCell({ access }: { access: Access }) {
   }
   if (access === "View") {
     return (
-      <span className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400">
+      <span className="inline-flex items-center gap-1 text-blue-600">
         <Eye className="size-4" />
         <span className="text-xs">View</span>
       </span>
     );
   }
-  return <Minus className="size-4 text-muted-foreground" />;
+  return <Minus className="text-muted-foreground size-4" />;
 }
 
 export function SettingsView() {

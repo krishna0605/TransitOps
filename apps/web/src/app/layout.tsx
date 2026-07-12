@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { AppProviders } from "@/providers/app-providers";
 
@@ -18,17 +17,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <AppProviders>{children}</AppProviders>
-          <Toaster richColors position="top-right" />
-        </ThemeProvider>
+        <AppProviders>{children}</AppProviders>
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

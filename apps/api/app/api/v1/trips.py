@@ -178,9 +178,7 @@ async def dispatch_trip(trip_id: int, session: DatabaseSession) -> TripRead:
 
 
 @router.post("/{trip_id}/complete", response_model=TripRead)
-async def complete_trip(
-    trip_id: int, payload: TripComplete, session: DatabaseSession
-) -> TripRead:
+async def complete_trip(trip_id: int, payload: TripComplete, session: DatabaseSession) -> TripRead:
     """Dispatched -> Completed. Writes final_odometer, rolls the vehicle
     odometer forward, and returns vehicle and driver to Available."""
     trip = await _load(session, trip_id)

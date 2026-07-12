@@ -47,16 +47,17 @@ import {
 import { cn } from "@/lib/utils";
 import {
   type Driver,
-  type DriverStatus,
-  drivers as seedDrivers,
-} from "@/lib/mock-data";
+  useCreateDriver,
+  useDrivers,
+  useUpdateDriverStatus,
+} from "@/lib/api/hooks";
 
-const DRIVER_STATUSES: DriverStatus[] = [
+const DRIVER_STATUSES = [
   "Available",
   "On Trip",
   "Off Duty",
   "Suspended",
-];
+] as const;
 
 const driverSchema = z.object({
   name: z.string().min(2, "Name is required."),
@@ -75,7 +76,10 @@ function safetyColor(score: number) {
 }
 
 export function DriversView() {
-  const [items, setItems] = useState<Driver[]>(seedDrivers);
+  const driversQuery = useDrivers();
+  const createDriver = useCreateDriver();
+  const updateDriverStatus = useUpdateDriverStatus();
+  const items = driversQuery.data ?? [];
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [open, setOpen] = useState(false);
@@ -100,36 +104,44 @@ export function DriversView() {
         const matchesSearch =
           q === "" ||
           d.name.toLowerCase().includes(q) ||
-          d.licenseNo.toLowerCase().includes(q);
+          d.license_no.toLowerCase().includes(q);
         return matchesStatus && matchesSearch;
       }),
     [items, search, statusFilter],
   );
 
-  function changeStatus(id: number, status: DriverStatus) {
-    setItems((prev) =>
-      prev.map((d) => (d.id === id ? { ...d, status } : d)),
-    );
-    toast.success("Driver status updated", { description: status });
+  async function changeStatus(
+    driverId: number,
+    status: (typeof DRIVER_STATUSES)[number],
+  ) {
+    try {
+      await updateDriverStatus.mutateAsync({ driverId, body: { status } });
+      toast.success("Driver status updated", { description: status });
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not update driver.",
+      );
+    }
   }
 
-  function onSubmit(values: DriverValues) {
-    setItems((prev) => [
-      {
-        id: Math.max(0, ...prev.map((d) => d.id)) + 1,
+  async function onSubmit(values: DriverValues) {
+    try {
+      await createDriver.mutateAsync({
         name: values.name,
-        licenseNo: values.licenseNo,
-        category: values.category,
-        expiry: values.expiry,
+        license_no: values.licenseNo,
+        license_category: values.category,
+        license_expiry: `20${values.expiry.slice(3)}-${values.expiry.slice(0, 2)}-01`,
         contact: values.contact,
-        safetyScore: 100,
-        status: "Available",
-      },
-      ...prev,
-    ]);
-    toast.success("Driver added", { description: values.name });
-    form.reset();
-    setOpen(false);
+        safety_score: 100,
+      });
+      toast.success("Driver added", { description: values.name });
+      form.reset();
+      setOpen(false);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not add driver.",
+      );
+    }
   }
 
   return (
@@ -248,7 +260,7 @@ export function DriversView() {
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative w-full max-w-xs">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -270,7 +282,7 @@ export function DriversView() {
             ))}
           </SelectContent>
         </Select>
-        <span className="ml-auto text-sm text-muted-foreground">
+        <span className="text-muted-foreground ml-auto text-sm">
           {filtered.length} of {items.length}
         </span>
       </div>
@@ -291,24 +303,18 @@ export function DriversView() {
             </TableHeader>
             <TableBody>
               {filtered.map((d) => (
-                <TableRow key={d.id}>
+                <TableRow key={d.driver_id}>
                   <TableCell className="font-medium">{d.name}</TableCell>
-                  <TableCell>{d.licenseNo}</TableCell>
-                  <TableCell>{d.category}</TableCell>
+                  <TableCell>{d.license_no}</TableCell>
+                  <TableCell>{d.license_category}</TableCell>
                   <TableCell>
                     <span
                       className={cn(
                         "inline-flex items-center gap-1.5",
-                        d.expired && "font-medium text-red-600 dark:text-red-400",
+                        "font-medium text-red-600",
                       )}
                     >
-                      {d.expiry}
-                      {d.expired ? (
-                        <span className="inline-flex items-center gap-1 text-xs">
-                          <AlertTriangle className="size-3.5" />
-                          Expired
-                        </span>
-                      ) : null}
+                      {d.license_expiry}
                     </span>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
@@ -316,17 +322,17 @@ export function DriversView() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
+                      <div className="bg-muted h-1.5 w-16 overflow-hidden rounded-full">
                         <div
                           className={cn(
                             "h-full rounded-full",
-                            safetyColor(d.safetyScore),
+                            safetyColor(d.safety_score),
                           )}
-                          style={{ width: `${d.safetyScore}%` }}
+                          style={{ width: `${d.safety_score}%` }}
                         />
                       </div>
-                      <span className="text-sm tabular-nums text-muted-foreground">
-                        {d.safetyScore}%
+                      <span className="text-muted-foreground text-sm tabular-nums">
+                        {d.safety_score}%
                       </span>
                     </div>
                   </TableCell>
@@ -334,7 +340,10 @@ export function DriversView() {
                     <Select
                       value={d.status}
                       onValueChange={(v) =>
-                        changeStatus(d.id, v as DriverStatus)
+                        changeStatus(
+                          d.driver_id,
+                          v as (typeof DRIVER_STATUSES)[number],
+                        )
                       }
                     >
                       <SelectTrigger
@@ -359,7 +368,7 @@ export function DriversView() {
         </CardContent>
       </Card>
 
-      <p className="text-sm text-muted-foreground">
+      <p className="text-muted-foreground text-sm">
         Rule: an expired license or Suspended status blocks a driver from trip
         assignment.
       </p>

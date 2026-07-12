@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  type components,
-  unwrapApiResponse,
-} from "@transitops/api-client";
+import { type components, unwrapApiResponse } from "@transitops/api-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { transitOpsClient } from "@/lib/api/transitops-client";
@@ -135,7 +132,13 @@ export function useCreateDriver() {
 export function useUpdateDriverStatus() {
   const invalidate = useInvalidateOperationalData();
   return useMutation({
-    mutationFn: ({ driverId, body }: { driverId: number; body: DriverStatusUpdate }) =>
+    mutationFn: ({
+      driverId,
+      body,
+    }: {
+      driverId: number;
+      body: DriverStatusUpdate;
+    }) =>
       request(
         transitOpsClient.PATCH("/api/v1/drivers/{driver_id}/status", {
           params: { path: { driver_id: driverId } },

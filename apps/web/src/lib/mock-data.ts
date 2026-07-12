@@ -73,33 +73,200 @@ export type Expense = {
 };
 
 export const vehicles: Vehicle[] = [
-  { id: 1, regNo: "GJ01AB4521", nameModel: "VAN-05", type: "Van", capacityKg: 500, odometer: 74000, acquisitionCost: 620000, status: "Available" },
-  { id: 2, regNo: "GJ01AB9985", nameModel: "TRUCK-11", type: "Truck", capacityKg: 5000, odometer: 182000, acquisitionCost: 2450000, status: "On Trip" },
-  { id: 3, regNo: "GJ01AB1120", nameModel: "MINI-03", type: "Mini", capacityKg: 1000, odometer: 66000, acquisitionCost: 410000, status: "In Shop" },
-  { id: 4, regNo: "GJ01AB0008", nameModel: "VAN-09", type: "Van", capacityKg: 750, odometer: 241900, acquisitionCost: 590000, status: "Retired" },
-  { id: 5, regNo: "GJ01AB7742", nameModel: "TRUCK-04", type: "Truck", capacityKg: 8000, odometer: 98500, acquisitionCost: 2900000, status: "Available" },
-  { id: 6, regNo: "GJ01AB5510", nameModel: "MINI-08", type: "Mini", capacityKg: 900, odometer: 51200, acquisitionCost: 380000, status: "On Trip" },
+  {
+    id: 1,
+    regNo: "GJ01AB4521",
+    nameModel: "VAN-05",
+    type: "Van",
+    capacityKg: 500,
+    odometer: 74000,
+    acquisitionCost: 620000,
+    status: "Available",
+  },
+  {
+    id: 2,
+    regNo: "GJ01AB9985",
+    nameModel: "TRUCK-11",
+    type: "Truck",
+    capacityKg: 5000,
+    odometer: 182000,
+    acquisitionCost: 2450000,
+    status: "On Trip",
+  },
+  {
+    id: 3,
+    regNo: "GJ01AB1120",
+    nameModel: "MINI-03",
+    type: "Mini",
+    capacityKg: 1000,
+    odometer: 66000,
+    acquisitionCost: 410000,
+    status: "In Shop",
+  },
+  {
+    id: 4,
+    regNo: "GJ01AB0008",
+    nameModel: "VAN-09",
+    type: "Van",
+    capacityKg: 750,
+    odometer: 241900,
+    acquisitionCost: 590000,
+    status: "Retired",
+  },
+  {
+    id: 5,
+    regNo: "GJ01AB7742",
+    nameModel: "TRUCK-04",
+    type: "Truck",
+    capacityKg: 8000,
+    odometer: 98500,
+    acquisitionCost: 2900000,
+    status: "Available",
+  },
+  {
+    id: 6,
+    regNo: "GJ01AB5510",
+    nameModel: "MINI-08",
+    type: "Mini",
+    capacityKg: 900,
+    odometer: 51200,
+    acquisitionCost: 380000,
+    status: "On Trip",
+  },
 ];
 
 export const drivers: Driver[] = [
-  { id: 1, name: "Alex", licenseNo: "DL-88213", category: "LMV", expiry: "12/2028", contact: "98765xxxxx", safetyScore: 96, status: "Available" },
-  { id: 2, name: "John", licenseNo: "DL-44120", category: "HMV", expiry: "03/2025", expired: true, contact: "98220xxxxx", safetyScore: 81, status: "Suspended" },
-  { id: 3, name: "Priya", licenseNo: "DL-77031", category: "LMV", expiry: "08/2027", contact: "99110xxxxx", safetyScore: 99, status: "On Trip" },
-  { id: 4, name: "Suresh", licenseNo: "DL-90045", category: "HMV", expiry: "01/2027", contact: "97440xxxxx", safetyScore: 88, status: "Off Duty" },
+  {
+    id: 1,
+    name: "Alex",
+    licenseNo: "DL-88213",
+    category: "LMV",
+    expiry: "12/2028",
+    contact: "98765xxxxx",
+    safetyScore: 96,
+    status: "Available",
+  },
+  {
+    id: 2,
+    name: "John",
+    licenseNo: "DL-44120",
+    category: "HMV",
+    expiry: "03/2025",
+    expired: true,
+    contact: "98220xxxxx",
+    safetyScore: 81,
+    status: "Suspended",
+  },
+  {
+    id: 3,
+    name: "Priya",
+    licenseNo: "DL-77031",
+    category: "LMV",
+    expiry: "08/2027",
+    contact: "99110xxxxx",
+    safetyScore: 99,
+    status: "On Trip",
+  },
+  {
+    id: 4,
+    name: "Suresh",
+    licenseNo: "DL-90045",
+    category: "HMV",
+    expiry: "01/2027",
+    contact: "97440xxxxx",
+    safetyScore: 88,
+    status: "Off Duty",
+  },
 ];
 
 export const trips: Trip[] = [
-  { id: 1, code: "TR001", source: "Gandhinagar Depot", destination: "Ahmedabad Hub", vehicle: "VAN-05", driver: "Alex", status: "Dispatched", eta: "45 min", cargoKg: 450, distanceKm: 58 },
-  { id: 2, code: "TR002", source: "Vatva", destination: "Rajkot Yard", vehicle: "TRUCK-11", driver: "John", status: "Completed", eta: "—", cargoKg: 3200, distanceKm: 214 },
-  { id: 3, code: "TR003", source: "Sabarmati", destination: "Nadiad", vehicle: "MINI-08", driver: "Priya", status: "Dispatched", eta: "1h 10m", cargoKg: 620, distanceKm: 74 },
-  { id: 4, code: "TR004", source: "Vatva Industrial Area", destination: "Sanand Warehouse", vehicle: "TRUCK-04", driver: "Suresh", status: "Draft", eta: "Awaiting driver", cargoKg: 5200, distanceKm: 39 },
-  { id: 5, code: "TR006", source: "Mansa", destination: "Kalol Depot", vehicle: "—", driver: "—", status: "Cancelled", eta: "Vehicle sent to shop", cargoKg: 0, distanceKm: 0 },
+  {
+    id: 1,
+    code: "TR001",
+    source: "Gandhinagar Depot",
+    destination: "Ahmedabad Hub",
+    vehicle: "VAN-05",
+    driver: "Alex",
+    status: "Dispatched",
+    eta: "45 min",
+    cargoKg: 450,
+    distanceKm: 58,
+  },
+  {
+    id: 2,
+    code: "TR002",
+    source: "Vatva",
+    destination: "Rajkot Yard",
+    vehicle: "TRUCK-11",
+    driver: "John",
+    status: "Completed",
+    eta: "—",
+    cargoKg: 3200,
+    distanceKm: 214,
+  },
+  {
+    id: 3,
+    code: "TR003",
+    source: "Sabarmati",
+    destination: "Nadiad",
+    vehicle: "MINI-08",
+    driver: "Priya",
+    status: "Dispatched",
+    eta: "1h 10m",
+    cargoKg: 620,
+    distanceKm: 74,
+  },
+  {
+    id: 4,
+    code: "TR004",
+    source: "Vatva Industrial Area",
+    destination: "Sanand Warehouse",
+    vehicle: "TRUCK-04",
+    driver: "Suresh",
+    status: "Draft",
+    eta: "Awaiting driver",
+    cargoKg: 5200,
+    distanceKm: 39,
+  },
+  {
+    id: 5,
+    code: "TR006",
+    source: "Mansa",
+    destination: "Kalol Depot",
+    vehicle: "—",
+    driver: "—",
+    status: "Cancelled",
+    eta: "Vehicle sent to shop",
+    cargoKg: 0,
+    distanceKm: 0,
+  },
 ];
 
 export const maintenanceLogs: Maintenance[] = [
-  { id: 1, vehicle: "VAN-05", service: "Oil Change", cost: 2500, date: "2026-07-09", status: "Active" },
-  { id: 2, vehicle: "TRUCK-11", service: "Engine Repair", cost: 18000, date: "2026-07-02", status: "Completed" },
-  { id: 3, vehicle: "MINI-03", service: "Tyre Replace", cost: 6200, date: "2026-07-05", status: "Active" },
+  {
+    id: 1,
+    vehicle: "VAN-05",
+    service: "Oil Change",
+    cost: 2500,
+    date: "2026-07-09",
+    status: "Active",
+  },
+  {
+    id: 2,
+    vehicle: "TRUCK-11",
+    service: "Engine Repair",
+    cost: 18000,
+    date: "2026-07-02",
+    status: "Completed",
+  },
+  {
+    id: 3,
+    vehicle: "MINI-03",
+    service: "Tyre Replace",
+    cost: 6200,
+    date: "2026-07-05",
+    status: "Active",
+  },
 ];
 
 export const fuelLogs: FuelLog[] = [
@@ -109,8 +276,24 @@ export const fuelLogs: FuelLog[] = [
 ];
 
 export const expenses: Expense[] = [
-  { id: 1, trip: "TR001", vehicle: "VAN-09", toll: 120, other: 0, amount: 120, status: "Available" },
-  { id: 2, trip: "TR002", vehicle: "TRUCK-11", toll: 640, other: 360, amount: 18000, status: "Completed" },
+  {
+    id: 1,
+    trip: "TR001",
+    vehicle: "VAN-09",
+    toll: 120,
+    other: 0,
+    amount: 120,
+    status: "Available",
+  },
+  {
+    id: 2,
+    trip: "TR002",
+    vehicle: "TRUCK-11",
+    toll: 640,
+    other: 360,
+    amount: 18000,
+    status: "Completed",
+  },
 ];
 
 export const dashboardKpis = [
@@ -123,7 +306,10 @@ export const dashboardKpis = [
   { label: "Fleet Utilization", value: "81%", tone: "success" as const },
 ];
 
-export const vehicleStatusBreakdown: { status: VehicleStatus; count: number }[] = [
+export const vehicleStatusBreakdown: {
+  status: VehicleStatus;
+  count: number;
+}[] = [
   { status: "Available", count: 42 },
   { status: "On Trip", count: 18 },
   { status: "In Shop", count: 5 },

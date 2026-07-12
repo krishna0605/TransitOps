@@ -9,18 +9,18 @@ import { cn } from "@/lib/utils";
  */
 const STATUS_STYLES: Record<string, string> = {
   // shared "good / available"
-  Available: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
-  Completed: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
+  Available: "bg-emerald-500/15 text-emerald-700",
+  Completed: "bg-emerald-500/15 text-emerald-700",
   // active / in-progress
-  "On Trip": "bg-blue-500/15 text-blue-700 dark:text-blue-400",
-  Dispatched: "bg-blue-500/15 text-blue-700 dark:text-blue-400",
-  Active: "bg-blue-500/15 text-blue-700 dark:text-blue-400",
+  "On Trip": "bg-blue-500/15 text-blue-700",
+  Dispatched: "bg-blue-500/15 text-blue-700",
+  Active: "bg-blue-500/15 text-blue-700",
   // attention / maintenance
-  "In Shop": "bg-amber-500/15 text-amber-700 dark:text-amber-400",
+  "In Shop": "bg-amber-500/15 text-amber-700",
   // blocked / stopped
-  Retired: "bg-red-500/15 text-red-700 dark:text-red-400",
-  Suspended: "bg-red-500/15 text-red-700 dark:text-red-400",
-  Cancelled: "bg-red-500/15 text-red-700 dark:text-red-400",
+  Retired: "bg-red-500/15 text-red-700",
+  Suspended: "bg-red-500/15 text-red-700",
+  Cancelled: "bg-red-500/15 text-red-700",
   // neutral
   Draft: "bg-muted text-muted-foreground",
   "Off Duty": "bg-muted text-muted-foreground",
