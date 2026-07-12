@@ -1,231 +1,320 @@
-"""Trip dispatcher endpoints (Screen 4).
+from datetime import UTC, datetime, timedelta
+from decimal import Decimal
+from hashlib import sha256
+from uuid import UUID
 
-Owns the trip lifecycle Draft -> Dispatched -> Completed / Cancelled and the
-state-machine side effects on vehicle and driver status. Dispatch enforces the
-capacity rule and refuses to double-book a vehicle or driver that is On Trip.
-"""
-
-from __future__ import annotations
-
-from datetime import UTC, date, datetime
-from typing import Annotated
-
-from fastapi import APIRouter, Query, status
-from pydantic import Field
+from fastapi import APIRouter, status
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 
+from app.api.auth import CurrentPrincipal, IdempotencyKey
 from app.api.dependencies import DatabaseSession
-from app.api.v1.common import ORMModel, get_or_404
 from app.core.exceptions import AppError
 from app.db.models.driver import Driver
-from app.db.models.trip import Trip
+from app.db.models.platform import AuditLog, IdempotencyRecord, OutboxEvent
+from app.db.models.trip import Trip, TripStatusHistory
 from app.db.models.vehicle import Vehicle
 
 router = APIRouter(prefix="/trips", tags=["trips"])
 
 
-class TripRead(ORMModel):
-    trip_id: int
+class TripRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    trip_id: UUID
     source: str
     destination: str
-    vehicle_id: int
+    vehicle_id: UUID
     vehicle_reg_no: str
-    vehicle_name_model: str
-    driver_id: int
+    driver_id: UUID
     driver_name: str
-    cargo_weight_kg: float
-    planned_distance_km: float
-    final_odometer: int | None
+    cargo_weight_kg: Decimal
+    planned_distance_km: Decimal
+    final_odometer: Decimal | None
     status: str
     dispatched_at: datetime | None
     completed_at: datetime | None
+    version: int
 
 
-class TripCreate(ORMModel):
-    source: str = Field(min_length=1, max_length=120)
-    destination: str = Field(min_length=1, max_length=120)
-    vehicle_id: int
-    driver_id: int
-    cargo_weight_kg: float = Field(gt=0)
-    planned_distance_km: float = Field(gt=0)
+class TripCreate(BaseModel):
+    source: str = Field(min_length=2, max_length=160)
+    destination: str = Field(min_length=2, max_length=160)
+    vehicle_id: UUID
+    driver_id: UUID
+    cargo_weight_kg: Decimal = Field(gt=0)
+    planned_distance_km: Decimal = Field(gt=0)
 
 
-class TripComplete(ORMModel):
-    # Optional; defaults to odometer + planned distance when omitted.
-    final_odometer: int | None = Field(default=None, ge=0)
+class TripUpdate(TripCreate):
+    version: int = Field(ge=1)
 
 
-def _serialize(trip: Trip) -> TripRead:
+class TripComplete(BaseModel):
+    final_odometer: Decimal = Field(ge=0)
+    version: int = Field(ge=1)
+
+
+class TripCancel(BaseModel):
+    reason: str = Field(min_length=2, max_length=500)
+    version: int = Field(ge=1)
+
+
+async def _load_trip(session: DatabaseSession, organization_id: UUID, trip_id: UUID, *, lock: bool = False) -> Trip:
+    statement = select(Trip).where(Trip.id == trip_id, Trip.organization_id == organization_id)
+    if lock:
+        statement = statement.with_for_update()
+    trip = (await session.execute(statement)).scalar_one_or_none()
+    if trip is None:
+        raise AppError(code="TRIP_NOT_FOUND", message="Trip was not found.", status_code=404)
+    return trip
+
+
+async def _read(session: DatabaseSession, trip: Trip) -> TripRead:
+    vehicle = await session.get(Vehicle, trip.vehicle_id)
+    driver = await session.get(Driver, trip.driver_id)
+    assert vehicle is not None and driver is not None
     return TripRead(
-        trip_id=trip.trip_id,
+        trip_id=trip.id,
         source=trip.source,
         destination=trip.destination,
-        vehicle_id=trip.vehicle_id,
-        vehicle_reg_no=trip.vehicle.reg_no,
-        vehicle_name_model=trip.vehicle.name_model,
-        driver_id=trip.driver_id,
-        driver_name=trip.driver.name,
+        vehicle_id=vehicle.id,
+        vehicle_reg_no=vehicle.reg_no,
+        driver_id=driver.id,
+        driver_name=driver.name,
         cargo_weight_kg=trip.cargo_weight_kg,
         planned_distance_km=trip.planned_distance_km,
         final_odometer=trip.final_odometer,
         status=trip.status,
         dispatched_at=trip.dispatched_at,
         completed_at=trip.completed_at,
+        version=trip.version,
     )
 
 
-async def _load(session: DatabaseSession, trip_id: int) -> Trip:
-    statement = (
-        select(Trip)
-        .where(Trip.trip_id == trip_id)
-        .options(selectinload(Trip.vehicle), selectinload(Trip.driver))
+async def _resources(
+    session: DatabaseSession, organization_id: UUID, vehicle_id: UUID, driver_id: UUID, *, lock: bool
+) -> tuple[Vehicle, Driver]:
+    vehicle_statement = select(Vehicle).where(
+        Vehicle.id == vehicle_id, Vehicle.organization_id == organization_id, Vehicle.archived_at.is_(None)
     )
-    trip = (await session.execute(statement)).scalar_one_or_none()
-    if trip is None:
-        raise AppError(
-            code="TRIP_NOT_FOUND",
-            message=f"Trip {trip_id} was not found.",
-            status_code=status.HTTP_404_NOT_FOUND,
+    driver_statement = select(Driver).where(
+        Driver.id == driver_id, Driver.organization_id == organization_id, Driver.archived_at.is_(None)
+    )
+    if lock:
+        vehicle_statement = vehicle_statement.with_for_update()
+        driver_statement = driver_statement.with_for_update()
+    vehicle = (await session.execute(vehicle_statement)).scalar_one_or_none()
+    driver = (await session.execute(driver_statement)).scalar_one_or_none()
+    if vehicle is None or driver is None:
+        raise AppError(code="ASSIGNMENT_NOT_FOUND", message="Vehicle or driver was not found.", status_code=404)
+    return vehicle, driver
+
+
+def _event(session: DatabaseSession, principal: CurrentPrincipal, trip: Trip, action: str) -> None:
+    now = datetime.now(UTC)
+    session.add_all(
+        [
+            AuditLog(
+                organization_id=principal.organization_id,
+                actor_id=principal.user_id,
+                action=action,
+                entity_type="trip",
+                entity_id=trip.id,
+                payload={"status": trip.status},
+            ),
+            OutboxEvent(
+                organization_id=principal.organization_id,
+                event_type=f"trip.{action}",
+                aggregate_type="trip",
+                aggregate_id=trip.id,
+                payload={"trip_id": str(trip.id), "status": trip.status},
+            ),
+        ]
+    )
+    session.add(
+        TripStatusHistory(
+            organization_id=principal.organization_id,
+            trip_id=trip.id,
+            to_status=trip.status,
+            actor_id=principal.user_id,
+            created_at=now,
         )
-    return trip
+    )
+
+
+async def _idempotent_trip(
+    session: DatabaseSession, organization_id: UUID, key: str | None, operation: str
+) -> Trip | None:
+    if not key:
+        return None
+    record = (
+        await session.execute(
+            select(IdempotencyRecord).where(
+                IdempotencyRecord.organization_id == organization_id,
+                IdempotencyRecord.key == key,
+                IdempotencyRecord.operation == operation,
+            )
+        )
+    ).scalar_one_or_none()
+    if record and record.response_body and "trip_id" in record.response_body:
+        return await _load_trip(session, organization_id, UUID(str(record.response_body["trip_id"])))
+    return None
+
+
+def _remember_idempotency(
+    session: DatabaseSession,
+    organization_id: UUID,
+    key: str | None,
+    operation: str,
+    trip_id: UUID,
+) -> None:
+    if key:
+        session.add(
+            IdempotencyRecord(
+                organization_id=organization_id,
+                key=key,
+                operation=operation,
+                request_hash=sha256(f"{operation}:{trip_id}".encode()).hexdigest(),
+                response_status=200,
+                response_body={"trip_id": str(trip_id)},
+                expires_at=datetime.now(UTC) + timedelta(days=1),
+            )
+        )
 
 
 @router.get("", response_model=list[TripRead])
-async def list_trips(
-    session: DatabaseSession,
-    vehicle_id: Annotated[int | None, Query()] = None,
-) -> list[TripRead]:
-    """List trips newest first. ``vehicle_id`` scopes results to one vehicle,
-    which powers the optional trip pickers on the fuel and maintenance screens."""
-    statement = (
-        select(Trip)
-        .options(selectinload(Trip.vehicle), selectinload(Trip.driver))
-        .order_by(Trip.trip_id.desc())
+async def list_trips(principal: CurrentPrincipal, session: DatabaseSession) -> list[TripRead]:
+    trips = list(
+        (
+            await session.execute(
+                select(Trip)
+                .where(Trip.organization_id == principal.organization_id)
+                .order_by(Trip.created_at.desc())
+            )
+        ).scalars()
     )
-    if vehicle_id is not None:
-        statement = statement.where(Trip.vehicle_id == vehicle_id)
-    trips = (await session.execute(statement)).scalars().all()
-    return [_serialize(t) for t in trips]
+    return [await _read(session, trip) for trip in trips]
+
+
+@router.get("/{trip_id}", response_model=TripRead)
+async def get_trip(trip_id: UUID, principal: CurrentPrincipal, session: DatabaseSession) -> TripRead:
+    return await _read(session, await _load_trip(session, principal.organization_id, trip_id))
 
 
 @router.post("", response_model=TripRead, status_code=status.HTTP_201_CREATED)
-async def create_trip(payload: TripCreate, session: DatabaseSession) -> TripRead:
-    """Create a Draft trip. Dispatch happens as a separate, validated step."""
-    vehicle = await get_or_404(session, Vehicle, payload.vehicle_id, entity="vehicle")
-    driver = await get_or_404(session, Driver, payload.driver_id, entity="driver")
-    trip = Trip(
-        source=payload.source.strip(),
-        destination=payload.destination.strip(),
-        vehicle_id=vehicle.vehicle_id,
-        driver_id=driver.driver_id,
-        cargo_weight_kg=payload.cargo_weight_kg,
-        planned_distance_km=payload.planned_distance_km,
-        status="Draft",
+async def create_trip(payload: TripCreate, principal: CurrentPrincipal, session: DatabaseSession) -> TripRead:
+    vehicle, driver = await _resources(
+        session, principal.organization_id, payload.vehicle_id, payload.driver_id, lock=False
     )
+    if payload.cargo_weight_kg > vehicle.max_capacity_kg:
+        raise AppError(code="CAPACITY_EXCEEDED", message="Cargo exceeds vehicle capacity.", status_code=409)
+    trip = Trip(organization_id=principal.organization_id, **payload.model_dump())
     session.add(trip)
+    await session.flush()
+    _event(session, principal, trip, "created")
     await session.commit()
-    return _serialize(await _load(session, trip.trip_id))
+    return await _read(session, trip)
+
+
+@router.patch("/{trip_id}", response_model=TripRead)
+async def update_trip(
+    trip_id: UUID, payload: TripUpdate, principal: CurrentPrincipal, session: DatabaseSession
+) -> TripRead:
+    trip = await _load_trip(session, principal.organization_id, trip_id, lock=True)
+    if trip.status != "DRAFT":
+        raise AppError(code="TRIP_NOT_EDITABLE", message="Only draft trips can be updated.", status_code=409)
+    if trip.version != payload.version:
+        raise AppError(code="STALE_VERSION", message="Trip was updated elsewhere.", status_code=409)
+    vehicle, _ = await _resources(
+        session, principal.organization_id, payload.vehicle_id, payload.driver_id, lock=False
+    )
+    if payload.cargo_weight_kg > vehicle.max_capacity_kg:
+        raise AppError(code="CAPACITY_EXCEEDED", message="Cargo exceeds vehicle capacity.", status_code=409)
+    for field, value in payload.model_dump(exclude={"version"}).items():
+        setattr(trip, field, value)
+    trip.version += 1
+    await session.commit()
+    return await _read(session, trip)
 
 
 @router.post("/{trip_id}/dispatch", response_model=TripRead)
-async def dispatch_trip(trip_id: int, session: DatabaseSession) -> TripRead:
-    """Draft -> Dispatched. Enforces capacity, vehicle/driver availability, and
-    the no-double-booking rule, then flags both resources On Trip."""
-    trip = await _load(session, trip_id)
-    if trip.status != "Draft":
-        raise AppError(
-            code="TRIP_NOT_DRAFT",
-            message=f"Only Draft trips can be dispatched (trip is {trip.status}).",
-        )
-
-    vehicle, driver = trip.vehicle, trip.driver
-
-    over_by = trip.cargo_weight_kg - vehicle.max_capacity_kg
-    if over_by > 0:
-        raise AppError(
-            code="CAPACITY_EXCEEDED",
-            message=f"Capacity exceeded by {over_by:g} kg -> dispatch blocked.",
-            details={
-                "cargo_weight_kg": trip.cargo_weight_kg,
-                "max_capacity_kg": vehicle.max_capacity_kg,
-                "over_by_kg": over_by,
-            },
-        )
-
-    if vehicle.status != "Available":
-        raise AppError(
-            code="VEHICLE_UNAVAILABLE",
-            message=f"Vehicle {vehicle.reg_no} is {vehicle.status}, not Available.",
-        )
-    if driver.status != "Available":
-        raise AppError(
-            code="DRIVER_UNAVAILABLE",
-            message=f"Driver {driver.name} is {driver.status}, not Available.",
-        )
-    if driver.license_expiry < date.today():
-        raise AppError(
-            code="DRIVER_LICENSE_EXPIRED",
-            message=f"Driver {driver.name}'s licence has expired.",
-        )
-
-    trip.status = "Dispatched"
+async def dispatch_trip(
+    trip_id: UUID,
+    principal: CurrentPrincipal,
+    session: DatabaseSession,
+    idempotency_key: IdempotencyKey = None,
+) -> TripRead:
+    existing = await _idempotent_trip(session, principal.organization_id, idempotency_key, "trip.dispatch")
+    if existing:
+        return await _read(session, existing)
+    trip = await _load_trip(session, principal.organization_id, trip_id, lock=True)
+    vehicle, driver = await _resources(
+        session, principal.organization_id, trip.vehicle_id, trip.driver_id, lock=True
+    )
+    if trip.status != "DRAFT" or vehicle.status != "AVAILABLE" or driver.status != "AVAILABLE":
+        raise AppError(code="DISPATCH_CONFLICT", message="Trip resources are no longer available.", status_code=409)
+    if driver.license_expiry < datetime.now(UTC).date():
+        raise AppError(code="LICENSE_EXPIRED", message="Driver license has expired.", status_code=409)
+    trip.status = "DISPATCHED"
     trip.dispatched_at = datetime.now(UTC)
-    vehicle.status = "On Trip"
-    driver.status = "On Trip"
+    trip.dispatched_by = principal.user_id
+    trip.version += 1
+    vehicle.status = "ON_TRIP"
+    driver.status = "ON_TRIP"
+    _event(session, principal, trip, "dispatched")
+    _remember_idempotency(session, principal.organization_id, idempotency_key, "trip.dispatch", trip.id)
     await session.commit()
-    return _serialize(await _load(session, trip_id))
+    return await _read(session, trip)
 
 
 @router.post("/{trip_id}/complete", response_model=TripRead)
-async def complete_trip(trip_id: int, payload: TripComplete, session: DatabaseSession) -> TripRead:
-    """Dispatched -> Completed. Writes final_odometer, rolls the vehicle
-    odometer forward, and returns vehicle and driver to Available."""
-    trip = await _load(session, trip_id)
-    if trip.status != "Dispatched":
-        raise AppError(
-            code="TRIP_NOT_DISPATCHED",
-            message=f"Only Dispatched trips can be completed (trip is {trip.status}).",
-        )
-
-    vehicle, driver = trip.vehicle, trip.driver
-    final_odometer = payload.final_odometer
-    if final_odometer is None:
-        final_odometer = vehicle.odometer + round(trip.planned_distance_km)
-    if final_odometer < vehicle.odometer:
-        raise AppError(
-            code="ODOMETER_REGRESSION",
-            message="Final odometer cannot be less than the current odometer.",
-            details={"current_odometer": vehicle.odometer, "final_odometer": final_odometer},
-        )
-
-    trip.status = "Completed"
-    trip.final_odometer = final_odometer
+async def complete_trip(
+    trip_id: UUID,
+    payload: TripComplete,
+    principal: CurrentPrincipal,
+    session: DatabaseSession,
+    idempotency_key: IdempotencyKey = None,
+) -> TripRead:
+    existing = await _idempotent_trip(session, principal.organization_id, idempotency_key, "trip.complete")
+    if existing:
+        return await _read(session, existing)
+    trip = await _load_trip(session, principal.organization_id, trip_id, lock=True)
+    vehicle, driver = await _resources(
+        session, principal.organization_id, trip.vehicle_id, trip.driver_id, lock=True
+    )
+    if trip.status != "DISPATCHED":
+        raise AppError(code="TRIP_NOT_DISPATCHED", message="Only dispatched trips can complete.", status_code=409)
+    if trip.version != payload.version or payload.final_odometer < vehicle.odometer:
+        raise AppError(code="INVALID_ODOMETER_OR_VERSION", message="Final odometer or version is invalid.", status_code=409)
+    trip.status = "COMPLETED"
     trip.completed_at = datetime.now(UTC)
-    vehicle.odometer = final_odometer
-    vehicle.status = "Available"
-    driver.status = "Available"
+    trip.final_odometer = payload.final_odometer
+    trip.version += 1
+    vehicle.odometer = payload.final_odometer
+    vehicle.status = "AVAILABLE"
+    driver.status = "AVAILABLE"
+    _event(session, principal, trip, "completed")
+    _remember_idempotency(session, principal.organization_id, idempotency_key, "trip.complete", trip.id)
     await session.commit()
-    return _serialize(await _load(session, trip_id))
+    return await _read(session, trip)
 
 
 @router.post("/{trip_id}/cancel", response_model=TripRead)
-async def cancel_trip(trip_id: int, session: DatabaseSession) -> TripRead:
-    """Cancel a Draft or Dispatched trip. A dispatched trip releases its
-    vehicle and driver back to Available."""
-    trip = await _load(session, trip_id)
-    if trip.status in ("Completed", "Cancelled"):
-        raise AppError(
-            code="TRIP_NOT_CANCELLABLE",
-            message=f"A {trip.status} trip cannot be cancelled.",
+async def cancel_trip(
+    trip_id: UUID, payload: TripCancel, principal: CurrentPrincipal, session: DatabaseSession
+) -> TripRead:
+    trip = await _load_trip(session, principal.organization_id, trip_id, lock=True)
+    if trip.status not in {"DRAFT", "DISPATCHED"} or trip.version != payload.version:
+        raise AppError(code="TRIP_CANNOT_CANCEL", message="Trip cannot be cancelled.", status_code=409)
+    if trip.status == "DISPATCHED":
+        vehicle, driver = await _resources(
+            session, principal.organization_id, trip.vehicle_id, trip.driver_id, lock=True
         )
-
-    if trip.status == "Dispatched":
-        if trip.vehicle.status == "On Trip":
-            trip.vehicle.status = "Available"
-        if trip.driver.status == "On Trip":
-            trip.driver.status = "Available"
-
-    trip.status = "Cancelled"
+        vehicle.status = "AVAILABLE"
+        driver.status = "AVAILABLE"
+    trip.status = "CANCELLED"
+    trip.cancelled_at = datetime.now(UTC)
+    trip.version += 1
+    _event(session, principal, trip, "cancelled")
     await session.commit()
-    return _serialize(await _load(session, trip_id))
+    return await _read(session, trip)
